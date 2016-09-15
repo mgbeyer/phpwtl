@@ -1,0 +1,34 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Representation of a single policy for data retrieval. 
+  *
+  * Data retrieval policies may be used by loggers and data retrievers alike to allow for user-driven complex off-standard bahavior in the process of logging data retrieval.
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api
+  */
+class DataRetrievalPolicy {
+	/** @var string $name Policy id. */
+	public $name= null;
+	/** @var string $flag Specify behavior of this policy. */
+	public $flag= null;
+	/** @var string $parameter Can be used to parameterize a policy bahavior (the parameter might be any type, non-scalar and two-ways). */
+	public $parameter= null;
+
+	/**
+	  * @param array $param Associative array to provide all attributes. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function __construct($param) {
+		$this->name= array_key_exists('name', $param) ? $param['name'] : "";
+		$this->flag= array_key_exists('flag', $param) ? $param['flag'] : "";
+		$this->parameter= array_key_exists('parameter', $param) ? $param['parameter'] : "";
+	}
+}
+?>

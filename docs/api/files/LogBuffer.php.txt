@@ -1,0 +1,189 @@
+<?php
+namespace phpWTL;
+use phpWTL\LogBufferHelper;
+
+require_once 'LogBufferHelper.php';
+
+/**
+  * Aggregator class for buffered logging.
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.2
+  * @api
+  */
+class LogBuffer {
+	/** Array of LoggerContent objects */
+	protected $_content_buffer= null;
+	/** Store the logger object */
+	protected $_logger= null;
+	/** Store the writer object */
+	protected $_writer= null;
+	/** Store callback functions */
+	protected $_callbacks= null;
+	/** Store parameters */
+	protected $_params= null;
+	
+	/**
+	  * @param object $logger Provide the logger to use. 
+	  * @param object $writer Provide the log writer to use. 
+	  * @param array $callbacks Provide array of callback functions. 
+	  * @param array $params Provide parameters. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+   public function __construct($logger, $writer, $callbacks, $params= null) {
+		if ($logger && $writer && $callbacks && is_array($callbacks)) {
+			$this->_logger= $logger;
+			$this->_writer= $writer;
+			if (!$params) {
+				$params= $this->loadDefaultParameters();
+			}
+			if (array_key_exists("buffer_size", $params)) {
+				if ($params["buffer_size"] < LogBufferHelper::BUFFER_OFF) $params["buffer_size"]= LogBufferHelper::BUFFER_OFF;
+			}
+			$this->_params= $params;
+			$this->_callbacks= $callbacks;
+			$this->_content_buffer= array();
+		}
+	}
+	
+	/**
+	  * @return object Get the logger object. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public function getLogger() {
+		if (!(null === $this->_logger)) return $this->_logger;
+	}
+	
+	/**
+	  * @return object Get the writer object. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public function getWriter() {
+		if (!(null === $this->_writer)) return $this->_writer;
+	}
+
+	/**
+	  * @return int Get the buffer size (= maximum size). 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public function getBufferSize() {
+		return $this->_params["buffer_size"];
+	}
+
+	/**
+	  * @return int Get the content buffer size (= actual size). 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.1
+	  * @api
+	  */
+    public function getContentBufferSize() {
+		$ret= null;
+		
+		if (!(null === $this->_content_buffer) && is_array($this->_content_buffer)) {
+			$ret= count($this->_content_buffer);
+		}
+		
+		return $ret;
+	}
+
+	/**
+	  * @return array Get the content buffer. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.1
+	  * @api
+	  */
+    public function getContentBuffer() {
+		return $this->_content_buffer;
+	}
+
+	/**
+	  * Log to buffer (wrapper for logger log() method)
+	  *
+	  * @param array $params Parameters to pass through to the logger's log() method.
+	  * @return array/mixed Errors (validation or logger specific, null if none)
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.1
+	  * @api
+	  */
+    public function log($params= null) {
+		$err= null;
+		
+		if ($this->getLogger()) {
+			if (array_key_exists(LogBufferHelper::CALLBACK_LOG_BEFORE, $this->_callbacks)) {
+				$this->_callbacks[LogBufferHelper::CALLBACK_LOG_BEFORE]($this->getLogger());
+			}
+			$err= $this->getLogger()->log($params);
+			if (array_key_exists(LogBufferHelper::CALLBACK_LOG_AFTER, $this->_callbacks)) {
+				$this->_callbacks[LogBufferHelper::CALLBACK_LOG_AFTER]($this->getLogger());
+			}
+			$content= $this->getLogger()->getLoggerContent();
+			if ($content && !$err) $this->store($content);
+		}
+		
+		return $err;
+	}
+
+	/**
+	  * Store content object to buffer
+	  *
+	  * @param object $content
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.1
+	  * @api
+	  */
+    public function store($content) {
+		if ($content) {
+			$this->_content_buffer[]= clone $content;			
+			if ($this->getContentBufferSize()>=$this->getBufferSize()) {
+				$this->flush();
+			}
+		}
+	}
+
+	/**
+	  * Flush buffer
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public function flush() {
+		if ($this->getWriter() && array_key_exists(LogBufferHelper::CALLBACK_FLUSH_EACH, $this->_callbacks)) {
+			foreach ($this->getContentBuffer() as $k=>$v) {
+				$this->_callbacks[LogBufferHelper::CALLBACK_FLUSH_EACH]($this->getWriter(), $v);
+			}
+			$this->_content_buffer= array();
+		}
+	}
+
+	/**
+	  * Initialize default parameters
+	  *
+	  * @return array
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  */
+    protected function loadDefaultParameters() {
+		return array (
+			'buffer_size' => LogBufferHelper::BUFFER_SIZE_DEFAULT
+		);
+	}
+
+}
+?>

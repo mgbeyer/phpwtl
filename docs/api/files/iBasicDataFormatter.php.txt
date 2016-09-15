@@ -1,0 +1,22 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Basic interface for a content (logger field) formatter (also handling field enclosing marks). 
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api All interface methods
+  */
+interface iBasicDataFormatter {
+	static function getInstance();
+	
+	static function format();
+	static function formatField($field_name, $value= null);
+	static function formatAll();
+	static function formatAllField($field_name, $value= null);
+	static function enclose();
+	static function encloseField($field_name, $value= null);
+}
+?>
+

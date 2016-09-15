@@ -1,0 +1,38 @@
+<?php
+namespace phpWTL;
+use phpWTL\DescriptorField;
+
+require_once 'DescriptorField.php';
+
+/**
+  * Basic interface for the descriptor of a logging format. 
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.1
+  * @api All interface methods
+  */
+interface iBasicFormatDescriptor {
+	static function getInstance();
+	
+	static function getFieldNames();
+	static function getFieldDescription($field_name);
+	static function getFieldAttributeNames();
+	static function getFieldAttribute($field_name, $attribute_name);
+	static function setFieldAttribute($field_name, $attribute_name, $value);
+	static function getFormatPrefix();
+
+	static function getCaption($field_name);
+	static function getPrefix($field_name);
+	static function getSuffix($field_name);
+	static function getFormatter($field_name);
+	static function getValidator($field_name);
+	static function getDatatype($field_name);
+	static function setCaption($field_name, $value);
+	static function setPrefix($field_name, $value);
+	static function setSuffix($field_name, $value);
+	static function setFormatter($field_name, $value);
+	static function setValidator($field_name, $value);
+	static function setDatatype($field_name, $value);
+}
+?>
+

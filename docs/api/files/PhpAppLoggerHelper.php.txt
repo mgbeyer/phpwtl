@@ -1,0 +1,41 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Helper class for PHP event logger, provides constants for RFC 5424 loglevels
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api All constant names (actual values might be subject to change)
+  */
+class PhpAppLoggerHelper {
+	/** Loglevel: DEBUG */
+	const LOGLEVEL_DEBUG= 700;
+	/** Loglevel: INFO */
+	const LOGLEVEL_INFO= 600;
+	/** Loglevel: NOTICE */
+	const LOGLEVEL_NOTICE= 500;
+	/** Loglevel: WARNING */
+	const LOGLEVEL_WARNING= 400;
+	/** Loglevel: ERROR */
+	const LOGLEVEL_ERROR= 300;
+	/** Loglevel: CRITICAL */
+	const LOGLEVEL_CRITICAL= 200;
+	/** Loglevel: ALERT */
+	const LOGLEVEL_ALERT= 100;
+	/** Loglevel: EMERGENCY */
+	const LOGLEVEL_EMERGENCY= 0;
+	
+	/** Loglevel captions */
+	public static $LOGLEVEL_CAPTION= array(
+			self::LOGLEVEL_DEBUG => "LOG_DEBUG",
+			self::LOGLEVEL_INFO => "LOG_INFO",
+			self::LOGLEVEL_NOTICE => "LOG_NOTICE",
+			self::LOGLEVEL_WARNING => "LOG_WARNING",
+			self::LOGLEVEL_ERROR => "LOG_ERROR",
+			self::LOGLEVEL_CRITICAL => "LOG_CRITICAL",
+			self::LOGLEVEL_ALERT => "LOG_ALERT",
+			self::LOGLEVEL_EMERGENCY => "LOG_EMERGENCY"
+	);
+}
+?>

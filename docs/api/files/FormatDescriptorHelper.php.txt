@@ -1,0 +1,69 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Helper class for format descriptors
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.1
+  * @api All constant names (actual values might be subject to change)
+  */
+class FormatDescriptorHelper {
+	/** Flag for methods returning field data: any fields (ignore "default" flag). */
+	const DEFAULT_ANY= 0;
+	/** Flag for methods returning field data: fields with set "default" flag only. */
+	const DEFAULT_ONLY= 1;
+	/** Flag for methods returning field data: only fields with no "default" flag set. */
+	const DEFAULT_NONE= 2;
+	/** Flag for methods returning typed field data: return raw datatype. */
+	const DATATYPE_RAW= 0;
+	/** Flag for methods returning typed field data: return formatted datatype. */
+	const DATATYPE_FORMATTED= 1;
+	/** Standard format for datetime. */
+	const DATETIME_DEFAULT_FORMAT= 'Y-m-d H:i:s';
+
+	/**
+	  * Convert a timestring to a string representation suitable for the "datetime" type
+	  *
+	  * @param int $ts timestamp value
+	  * @return string datetime conform string (DATETIME_DEFAULT_FORMAT). 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public static function timestamp2datetimeString($ts) {
+		$ret= null;
+		
+		if ($ts && is_int($ts)) {
+			$dt= new \DateTime();
+			$dt->setTimestamp($ts);
+			$ret= $dt->format(self::DATETIME_DEFAULT_FORMAT);
+		}
+		
+		return $ret;
+	}
+
+	/**
+	  * Convert a string representation suitable for the "datetime" type to a timestamp
+	  *
+	  * @param string $datetime datetime conform string (DATETIME_DEFAULT_FORMAT)
+	  * @return int timestamp value. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+    public static function datetimeString2timestamp($datetime) {
+		$ret= null;
+		
+		if ($datetime) {
+			$dt= \DateTime::createFromFormat(self::DATETIME_DEFAULT_FORMAT, $datetime);
+			$ret= $dt->getTimestamp();
+		}
+		
+		return $ret;
+	}
+
+}
+?>

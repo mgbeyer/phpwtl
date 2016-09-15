@@ -1,0 +1,1 @@
+..\phpDocumentor2\phpDocumentor-2.9.0\bin\phpdoc -d ./ -t ./docs/api --ignore dbal-2.5.4/*,examples/*

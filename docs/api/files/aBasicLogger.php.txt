@@ -1,0 +1,134 @@
+<?php
+namespace phpWTL;
+use phpWTL\phpWTL;
+use phpWTL\aSingleton;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+
+require_once 'phpWTL.php';
+require_once 'aSingleton.php';
+require_once 'DataRetrievalPolicy.php';
+require_once 'DataRetrievalPolicyHelper.php';
+
+/**
+  * Abstract logger class. 
+  *
+  * A logger in its basic form typically handles the following tasks:
+  *
+  * 	- Instantiate a LoggerContent object and provide it with a format blueprint in form of a static FormatDescriptor class
+  *		- Initialize a DataRetriever and provide it with a LoggerContent object (and if applicable with RetrievalPolicies)
+  * 	- Initialize a DataValidator and provide it with a LoggerContent object
+  * 	- Initialize a DataFormatter and provide it with a LoggerContent object
+  *		- Provide a method to perform the actual logging (i.e. invoke retriever, validator and formatter accordingly)
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.3.1
+  * @api
+  */
+abstract class aBasicLogger extends aSingleton {
+	protected static $retrievalPolicies= null;
+	protected static $loggerContent= null;
+	protected static $dataRetriever= null;
+	protected static $dataValidator= null;
+	protected static $dataFormatter= null;
+	
+	/**
+	  * Perform the actual logging process (delegate single tasks to retriever, validator and formatter).
+	  *	  
+	  * @param array $params Logger specific parameters
+	  * @return array Validation errors (empty if none)
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.2.0
+	  * @api
+	  */
+	abstract public function log($params= null);
+
+	/**
+	  * Set default data retrieval policies.
+	  *	  
+	  * @param object $retrievalPolicies Provide policies for data retrieval. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  */
+	protected function loadDataRetrievalPoliciesDefault() {
+		static::$retrievalPolicies= null;
+	}
+
+	/**
+	  * Return data retrieval policies set during initialization.
+	  *	  
+	  * @return array
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getDataRetrievalPolicies() {
+		return static::$retrievalPolicies;
+	}
+	/**
+	  * Set data retrieval policies after initialization:
+	  *	  
+	  * - Also do this in the associated data retriever 
+	  * - If null restore the default
+	  *	  
+	  * @param array $retrievalPolicies Provide policies for data retrieval. 
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function setDataRetrievalPolicies($retrievalPolicies= null) {		
+		if ($retrievalPolicies) {
+			static::$retrievalPolicies= $retrievalPolicies;
+		} else {
+			static::loadDataRetrievalPoliciesDefault();
+		}
+		if (static::$dataRetriever) static::$dataRetriever->setDataRetrievalPolicies(static::$retrievalPolicies);
+	}
+
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getFormatDescriptor() {
+		return static::$loggerContent->getFormatDescriptor();
+	}
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getLoggerContent() {
+		return static::$loggerContent;
+	}
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getDataRetriever() {
+		return static::$dataRetriever;
+	}
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getDataValidator() {
+		return static::$dataValidator;
+	}
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getDataFormatter() {
+		return static::$dataFormatter;
+	}
+	
+}
+?>

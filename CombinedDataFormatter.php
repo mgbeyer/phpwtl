@@ -1,0 +1,38 @@
+<?php
+namespace phpWTL;
+use phpWTL\CommonDataFormatter;
+
+require_once 'CommonDataFormatter.php';
+
+/**
+  * Data formatter for the combined log format. 
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.2.0
+  * @api
+  */
+class CombinedDataFormatter extends CommonDataFormatter {
+
+	/**
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function formatField($field_name, $value= null) {
+		parent::formatField($field_name, $value);
+		
+		if (static::$fieldDescriptor && static::$loggerContent) {
+			$format_string= static::$fieldDescriptor->getFormatter($field_name);
+			if (!$value) $value= static::$loggerContent->__get($field_name);
+			switch ($field_name) {
+				case "referrer":
+				break;
+				case "user_agent":
+				break;
+			}
+			static::$loggerContent->__set($field_name, $value);
+		}
+	}
+		
+}
+?>

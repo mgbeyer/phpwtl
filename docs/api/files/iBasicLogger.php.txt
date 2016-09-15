@@ -1,0 +1,44 @@
+<?php
+namespace phpWTL;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+
+require_once 'DataRetrievalPolicy.php';
+require_once 'DataRetrievalPolicyHelper.php';
+
+/**
+  * Basic logger interface. 
+  *
+  * A logger in its basic form typically handles the following tasks:
+  *
+  * 	- Instantiate a LoggerContent object and provide it with a format blueprint in form of a static FormatDescriptor class
+  *		- Initialize a DataRetriever and provide it with a LoggerContent object (and if applicable with RetrievalPolicies)
+  * 	- Initialize a DataValidator and provide it with a LoggerContent object
+  * 	- Initialize a DataFormatter and provide it with a LoggerContent object
+  *		- Provide a method to perform the actual logging (i.e. invoke retriever, validator and formatter accordingly)
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api All interface methods
+  */
+interface iBasicLogger {
+	static function getInstance();
+	static function getDataRetrievalPolicies();
+	static function setDataRetrievalPolicies($retrievalPolicies);
+	static function getFormatDescriptor();
+	static function getLoggerContent();
+	static function getDataRetriever();
+	static function getDataValidator();
+	static function getDataFormatter();
+	/**
+	  * Perform the actual logging process (delegate single tasks to retriever, validator and formatter).
+	  *
+	  * @param boolean $validate Perform validation?
+	  * @param boolean $format Perform formatting? (might be used to obtain raw data)
+	  * @return array Validation errors (empty if none)
+	  * @api
+	  */
+	static function log($validate, $format);
+}
+?>
+

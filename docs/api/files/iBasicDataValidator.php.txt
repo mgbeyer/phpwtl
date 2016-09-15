@@ -1,0 +1,18 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Basic interface for a content (logger field) validator. 
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api All interface methods
+  */
+interface iBasicDataValidator {
+	static function getInstance();
+	
+	static function validate();
+	static function isValid($field_name, $value= null);
+}
+?>
+

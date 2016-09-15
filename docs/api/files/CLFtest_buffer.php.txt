@@ -1,0 +1,66 @@
+<?php
+use phpWTL\CombinedLogger;
+use phpWTL\CommonCombinedDRP;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+use phpWTL\LogWriter\FLW\FileLogWriterExt;
+use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+use phpWTL\LogBuffer;
+use phpWTL\LogBufferHelper;
+
+require_once 'CombinedLogger.php';
+require_once 'LogWriter/FLW/FileLogWriterExt.php';
+require_once 'LogWriter/FLW/FileLogWriterHelper.php';
+require_once 'LogBuffer.php';
+require_once 'LogBufferHelper.php';
+
+// define policies
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => CommonCombinedDRP::DRP_CC_CLR_CUSTOM,
+			'parameter' => '_test.php'
+		)
+	)
+);
+
+$logger= CombinedLogger::getInstance($myPolicies);
+$writer= new FileLogWriterExt();
+
+// define how to use and feed the writer (i.e. store a single log entry) during the buffer flush loop
+function myComplexFlush($writer_object, $content_object) {
+	$csv_params= array(
+		"field_delimiter" => ';',
+		"field_quote" => '\'',
+		"field_quote_escape" => '\\'
+	);
+	$content= $content_object->toArray();
+	$content= $content_object->fieldNames2Captions($content);
+	$csv= FileLogWriterHelper::content2CSV($content, $csv_params);
+	$writer_object->writeToLogExt($csv["field_content"], $csv["field_names"]);
+}
+
+function mySimpleFlush($writer_object, $content_object) {
+	$writer_object->writeToLog($content_object);
+}
+
+$myCallbacks= array (
+	LogBufferHelper::CALLBACK_FLUSH_EACH => "mySimpleFlush"
+);
+
+$myBufferParams= array (
+	"buffer_size" => LogBufferHelper::BUFFER_OFF
+);
+
+$logbuffer= new LogBuffer($logger, $writer, $myCallbacks, $myBufferParams);
+
+// "log" method
+$logbuffer->log();
+
+// "store" method
+//$logger->log();
+//$logbuffer->store($logger->getLoggerContent());
+
+?>
+

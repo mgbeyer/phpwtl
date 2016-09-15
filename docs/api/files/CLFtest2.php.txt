@@ -1,0 +1,107 @@
+<?php
+use phpWTL\ExtendedLogger;
+use phpWTL\ExtendedDRP;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+use phpWTL\LogWriter\FLW\FileLogWriterExt;
+
+require_once 'ExtendedLogger.php';
+require_once 'LogWriter/FLW/FileLogWriterExt.php';
+
+// define policies
+/*
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => ExtendedDRP::DRP_EXT_CLR_CUSTOM,
+			'parameter' => '_test.php'
+		)
+	)
+);
+*/
+/*
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => ExtendedDRP::DRP_EXT_CLR_BUFFER
+		)
+	)
+);
+*/
+
+// instantiate a logger
+// a logger object represents a certain log format. it knows and handles all classes/objects neccessary:
+// data retriever, data validator and data formatter
+//$logger= ExtendedLogger::getInstance($myPolicies);
+$logger= ExtendedLogger::getInstance();
+
+// show your logger's format description (here: combined)
+echo "<br/>format prefix: ";
+echo $logger::getFormatDescriptor()->getformatPrefix();
+echo "<br/>format field names: ";
+print_r($logger::getFormatDescriptor()->getFieldNames());
+
+
+// override field format
+//$logger::getFormatDescriptor()->setFormatter("sc-bytes", "%B");
+
+
+// do the actual logging (data retrieval, validation and formatting)
+$logger::log();
+
+echo "<br/><br/>DEBUG: ".DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter($logger::getDataRetrievalPolicies(), ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)."<br/>";
+
+// you can individually change fields content after logging
+// (but then you might have to apply validator or formatter yourself afterwards if needed)
+/*
+$myval= "hallo welt!";
+if ($logger::getDataValidator()->isValid("cs-referrer", $myval)) {
+	$logger::getDataRetriever()->setFieldContent("cs-referrer", $myval);
+	$logger::getDataFormatter()->formatAllField("cs-referrer");
+}
+*/
+
+
+// instantiate a log writer
+$writer= new FileLogWriterExt();
+
+
+// a writer will log their internal error, warnings and state into corr. variables:
+// "error" array, "warning" array and "state" string
+echo "<br/><br/>";
+echo "ERRORS: ";
+print_r($writer->error);
+echo "<br/><br/>";
+echo "WARNINGS: ";
+print_r($writer->warning);
+echo "<br/><br/>";
+echo "log writer state: ";
+echo $writer->state;
+
+
+// if everything is ready you can use the "getLoggerContent" method to obtain the log information to pass on to your writer.
+// "__toString" magic is used to build a log entry string representation of the content object
+// which you can feed to a log writer
+//$writer->writeToLogExt($logger::getLoggerContent(), $logger::buildDirectivesForFileWriter());
+
+$keys_to_show= $logger::getFormatDescriptor()->getRegularFieldNames();
+$key_to_delete= array_search("time", $keys_to_show);
+if ($key_to_delete) unset($keys_to_show[$key_to_delete]);
+$keys_to_show= array_reverse($keys_to_show);
+$writer->writeToLogExt(
+	$logger::getLoggerContent()->toString($keys_to_show), 
+	$logger::buildDirectivesForFileWriter($keys_to_show)
+);
+
+
+echo "<br/><br/>toArray: ";
+print_r($logger::getLoggerContent()->toArray());
+echo "<br/><br/>metaToArray: ";
+print_r($logger::getLoggerContent()->toArrayMeta());
+echo "<br/><br/>directives: ";
+print_r($logger::buildDirectivesForFileWriter());
+
+?>
+

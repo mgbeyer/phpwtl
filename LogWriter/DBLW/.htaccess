@@ -1,0 +1,4 @@
+<Files "DBLW-ConnParam.ini">
+	Order Allow, Deny
+	Deny from all
+</Files>

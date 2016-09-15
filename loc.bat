@@ -1,0 +1,1 @@
+cloc . --exclude-dir=dbal-2.5.4,docs --force-lang="PHP",php

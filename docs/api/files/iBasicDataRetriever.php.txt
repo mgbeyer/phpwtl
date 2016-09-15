@@ -1,0 +1,22 @@
+<?php
+namespace phpWTL;
+
+/**
+  * Basic interface for a data retriever. 
+  *
+  * @author Michael Beyer <mgbeyer@gmx.de>
+  * @version v0.1.0
+  * @api All interface methods
+  */
+interface iBasicDataRetriever {
+	static function getInstance();
+	
+	static function retrieve();
+	static function retrieveField($field_name, $value= null);
+	static function setFieldContent($field_name, $value);
+
+	static function getDataRetrievalPolicies();
+	static function setDataRetrievalPolicies($retrievalPolicies);
+}
+?>
+

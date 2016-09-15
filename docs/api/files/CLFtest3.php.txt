@@ -1,0 +1,10 @@
+<?php
+use phpWTL\LogWriter\DBLW\DatabaseLogWriterHelper;
+
+require_once 'LogWriter/DBLW/DatabaseLogWriterHelper.php';
+
+$typeinfo= DatabaseLogWriterHelper::mapDBALDataType("id");
+print_r($typeinfo);
+
+?>
+

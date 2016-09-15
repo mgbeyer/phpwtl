@@ -1,0 +1,146 @@
+<?php
+use phpWTL\CombinedLogger;
+use phpWTL\CommonCombinedDRP;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+use phpWTL\LogWriter\FLW\FileLogWriterExt;
+use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+
+require_once 'CombinedLogger.php';
+require_once 'LogWriter/FLW/FileLogWriterExt.php';
+require_once 'LogWriter/FLW/FileLogWriterHelper.php';
+
+// define policies
+/*
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => CommonCombinedDRP::DRP_CC_CLR_CUSTOM,
+			'parameter' => '_test.php'
+		)
+	)
+);
+*/
+
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => CommonCombinedDRP::DRP_CC_CLR_BUFFER
+		)
+	)
+);
+
+
+// instantiate a logger
+// a logger object represents a certain log format. it knows and handles all classes/objects neccessary:
+// data retriever, data validator and data formatter
+//$logger= CombinedLogger::getInstance($myPolicies);
+$logger= CombinedLogger::getInstance($myPolicies);
+
+// show your logger's format description (here: combined)
+echo "<br/>format prefix: ";
+echo $logger::getFormatDescriptor()->getformatPrefix();
+echo "<br/>format field names: ";
+print_r($logger::getFormatDescriptor()->getFieldNames());
+
+
+// override field format
+$logger::getFormatDescriptor()->setFormatter("content_size", "%B");
+
+// you might set retrieval policies other than the default (DRP_CC_CONTENT_LENGTH_RETRIEVAL, DRP_CC_CLR_SCRIPT)
+// this can be done after the logger has been instantiated but also with an array of policies as a paramater for "getInstance"
+//$logger::setRetrievalPolicies($myPolicies);
+// THE "DRP_CC_CONTENT_LENGTH_RETRIEVAL" POLICY:
+// 1.) DRP_CC_CLR_SCRIPT
+// per default, the request target is the php script the "log" method is called from (flag "DRP_CC_CLR_SCRIPT").
+// this means the content-length of the response object given to the client is estimated by looking up the size of the actual php script file the "log" method is called from.
+// this *might* come close to the real output produced by the script but also might differ big time (largely depending on your code).
+// 2.) DRP_CC_CLR_BUFFER
+// if this flag is set, PHP output control (buffering) will be used to actually calculate the size of content produced by the script and sent back to the client.
+// this might not be exactly the value a webserver would see and may be off by a couple bytes due to measurement/script-injection logistics but it comes pretty close to a real webserver log entry.
+// the main drawback of this method is that now the whole output of the script will be buffered. While output buffering is active no output is sent from the script (other than headers), 
+// instead the output is stored in an internal buffer until the "log" method is called (at this point content-length will be measured and the whole buffer will be sent "en bloc").
+// most of all this means if possible you should instantiate your logger right at the beginning of your script (this will start the buffer) but call the "log" method not before the end of your script (which will terminate and send the buffer).
+// (whatever output is produced before the instantiation and after calling "log" will not be measured).
+// 3.) DRP_CC_CLR_CUSTOM
+// you might provide the relative filename/path to another ressource (like an image) via flag "DRP_CLR_CUSTOM". 
+// you provide the filename/filepath via "parameter". this affects the fields "content_size", "status_code", 
+// the request URI part of "request_line" (common format) and the "referrer" field (combined format) as follows: 
+// 		"content_size" will contain the size of the given request target or 0 if the target doesn't exist. 
+//		"status code" will contain 200 if the target exists and 404 otherwise. 
+// 		"request_line" will now contain the new given target prefixed with the path to the php script the "log" method is called from 
+// 		(and thus is seen as relative to it).
+// 		"referrer" will now contain the request URI (plus query string if available) of the php script the "log" method is called from 
+// 		(normally this would go into "request_line"). 
+
+
+// do the actual logging (data retrieval, validation and formatting)
+$logger::log();
+
+echo "<br/><br/>DEBUG: ".DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter($logger::getDataRetrievalPolicies(), CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)."<br/>";
+
+// you can individually change fields content after logging
+// (but then you might have to apply validator or formatter yourself afterwards if needed)
+/*
+$myval= "hallo welt!";
+if ($logger::getDataValidator()->isValid("referrer", $myval)) {
+	$logger::getDataRetriever()->setFieldContent("referrer", $myval);
+	$logger::getDataFormatter()->formatAllField("referrer");
+}
+*/
+
+
+// instantiate a log writer
+$writer= new FileLogWriterExt();
+
+
+// a writer will log their internal error, warnings and state into corr. variables:
+// "error" array, "warning" array and "state" string
+echo "<br/><br/>";
+echo "ERRORS: ";
+print_r($writer->error);
+echo "<br/><br/>";
+echo "WARNINGS: ";
+print_r($writer->warning);
+echo "<br/><br/>";
+echo "log writer state: ";
+echo $writer->state;
+
+
+$csv_params= array(
+	"field_delimiter" => ';',
+	"field_quote" => '\'',
+	"field_quote_escape" => '\\'
+);
+$content= $logger::getLoggerContent()->toArray();
+$content= $logger::getLoggerContent()->fieldNames2Captions($content);
+$csv= FileLogWriterHelper::content2CSV($content, $csv_params);
+echo "<br/><br/>";
+echo "<br>CSV header: ".$csv["field_names"];
+echo "<br>CSV content: ".$csv["field_content"];
+echo "<br/><br/>";
+
+// if everything is ready you can use the "getLoggerContent" method to obtain the log information to pass on to your writer.
+// "__toString" magic is used to build a log entry string representation of the content object
+// which you can feed to a log writer
+//$logger::getLoggerContent()->setFieldDelimiter(",");
+//$writer->writeToLog($logger::getLoggerContent());
+$writer->writeToLogExt($csv["field_content"], $csv["field_names"]);
+
+/*
+$keys_to_show= $logger::getFormatDescriptor()->getFieldNames();
+$key_to_delete= array_search("user_id", $keys_to_show);
+if ($key_to_delete) unset($keys_to_show[$key_to_delete]);
+$keys_to_show= array_reverse($keys_to_show);
+$writer->writeToLog($logger::getLoggerContent()->toString($keys_to_show));
+*/
+
+echo "<br/><br/>toArray: ";
+print_r($logger::getLoggerContent()->toArray());
+echo "<br/><br/>toArrayTrimmed: ";
+print_r($logger::getLoggerContent()->toArrayTrimmed());
+
+?>
+

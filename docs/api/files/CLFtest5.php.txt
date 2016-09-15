@@ -1,0 +1,34 @@
+<?php
+use phpWTL\PhpAppLogger;
+use phpWTL\PhpAppLoggerHelper;
+
+require_once 'PhpAppLogger.php';
+require_once 'PhpAppLoggerHelper.php';
+
+$logger= PhpAppLogger::getInstance(PhpAppLoggerHelper::LOGLEVEL_WARNING);
+
+$params= array(
+	"loglevel" => PhpAppLoggerHelper::LOGLEVEL_ERROR,
+	"message" => "Hello world! This logger has a {format_prefix} format prefix. This is call {count}.",
+	"context" => array(
+		"exception" => new RuntimeException('Hey dude, things went south BIG time!'),
+		"format_prefix" => $logger::getFormatDescriptor()->getFormatPrefix(),
+		"count" => 1,
+		"data" => array("one" => 1, "two" => array("hello" => "2_1", "world" => "2_2"), "three" => 3),
+		"data_2" => array("eins", "zwo", "drei"),
+		"ex" => new Exception("DEBUG!!!"),
+		"arr" => array("hallo" => "welt", "version" => $logger::getFormatDescriptor()->getFormatVersion())
+	),
+	"exclude_placeholders_from_context" => true
+);
+
+$fail= $logger::log($params);
+
+if (!$fail) print_r($logger::getLoggerContent()->toArray()); else print_r($fail);
+
+//echo "<br/><br/>toArray: ";
+// note: there will be a null coalescing operator in PHP7
+//print_r($logger::getLoggerContent() ? $logger::getLoggerContent()->toArray() : null);
+
+?>
+

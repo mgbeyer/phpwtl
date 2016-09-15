@@ -1,0 +1,12 @@
+; phpWhatTheLog
+; 	FileLogWriter user and password configuration file
+; 
+; This ini file is used to configure the user and password for .htaccess INITIALLY ONLY.
+; When the logwriter is called for the first time and this ini file exists and is valid, a fresh set of 
+; .htaccess and .htpasswd files will be created in the specified path (logs_path) where the password will be 
+; saved as a hash and this ini file will then be DELETED for security reasons. The logwriter will not replace 
+; .htaccess/.htpasswd until it finds a new valid credentials ini file.
+; Please note that "password" must at least be 8 characters long.
+
+user = "testuser"
+password = "halloWelt"

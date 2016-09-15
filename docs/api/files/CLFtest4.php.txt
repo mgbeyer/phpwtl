@@ -1,0 +1,155 @@
+<?php
+use phpWTL\ExtendedLogger;
+use phpWTL\ExtendedDRP;
+use phpWTL\DataRetrievalPolicy;
+use phpWTL\DataRetrievalPolicyHelper;
+use phpWTL\LogWriter\DBLW\DatabaseLogWriter;
+use phpWTL\LogWriter\DBLW\DatabaseLogWriterHelper;
+
+require_once 'ExtendedLogger.php';
+require_once 'LogWriter/DBLW/DatabaseLogWriter.php';
+require_once 'LogWriter/DBLW/DatabaseLogWriterHelper.php';
+
+// define policies
+/*
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => ExtendedDRP::DRP_EXT_CLR_CUSTOM,
+			'parameter' => '_test.php'
+		)
+	)
+);
+*/
+/*
+$myPolicies= array(
+	new DataRetrievalPolicy(
+		array(
+			'name' => ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => ExtendedDRP::DRP_EXT_CLR_BUFFER
+		)
+	)
+);
+*/
+
+// instantiate a logger
+// a logger object represents a certain log format. it knows and handles all classes/objects neccessary:
+// data retriever, data validator and data formatter
+//$logger= ExtendedLogger::getInstance($myPolicies);
+$logger= ExtendedLogger::getInstance();
+
+// show your logger's format description (here: combined)
+echo "<br/>format prefix: ";
+echo $logger::getFormatDescriptor()->getformatPrefix();
+echo "<br/>format version: ";
+echo $logger::getFormatDescriptor()->getformatVersion();
+echo "<br/>format field names: ";
+print_r($logger::getFormatDescriptor()->getFieldNames());
+
+
+// override field format
+//$logger::getFormatDescriptor()->setFormatter("sc-bytes", "%B");
+
+
+// do the actual logging (data retrieval, validation and formatting)
+$logger::log();
+
+
+echo "<br/><br/>DEBUG: ".DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter($logger::getDataRetrievalPolicies(), ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)."<br/>";
+
+// you can individually change fields content after logging
+// (but then you might have to apply validator or formatter yourself afterwards if needed)
+/*
+$myval= "hallo welt!";
+if ($logger::getDataValidator()->isValid("cs-referrer", $myval)) {
+	$logger::getDataRetriever()->setFieldContent("cs-referrer", $myval);
+	$logger::getDataFormatter()->formatAllField("cs-referrer");
+}
+*/
+
+
+// instantiate a log writer
+/*
+$connectionParams = array(
+    'dbname' => 'test',
+    'user' => 'test',
+    'password' => 'test',
+    'host' => 'localhost',
+    'port' => 3306,
+    'charset' => 'utf8',
+    'driver' => 'mysqli',
+);
+*/
+
+$connectionParams= DatabaseLogWriterHelper::getConnectionParamsFromIni(true);
+echo "<br/><br/>";
+echo "CONN PARAM: ";
+print_r($connectionParams);
+$datatypeMappings= DatabaseLogWriterHelper::getDatatypeMappingsFromIni();
+echo "<br/><br/>";
+echo "DATATYPE MAPPINGS: ";
+print_r($datatypeMappings);
+
+$writerParams = array(
+	'table' => "test_table",
+	'safety' => DatabaseLogWriterHelper::SAFETY_NONE,
+	'datatype_mappings' => $datatypeMappings,
+	'datatype_mappings_replace_defaults' => false
+);
+
+$writer= new DatabaseLogWriter($connectionParams, $writerParams);
+
+echo "<br/><br/>";
+echo "WRITER DEFAULT DATATYPE MAPPINGS: ";
+print_r($writer->getDatatypeMappingsDefault());
+echo "<br/><br/>";
+echo "DATATYPE MAPPINGS IN EFFECT: ";
+print_r($writer->getDatatypeMappings());
+echo "<br/><br/>";
+echo "MAP TEST: ";
+print_r($writer->mapDBALDataType("bigint"));	// SOLL: string, length: 1024
+
+
+// a writer will log their internal error, warnings and state into corr. variables:
+// "error" array, "warning" array and "state" string
+echo "<br/><br/>";
+echo "ERRORS: ";
+print_r($writer->error);
+echo "<br/><br/>";
+echo "WARNINGS: ";
+print_r($writer->warning);
+echo "<br/><br/>";
+echo "log writer state: ";
+echo $writer->state;
+
+
+// if everything is ready you can use the "getLoggerContent" method to obtain the log information to pass on to your writer.
+// "__toString" magic is used to build a log entry string representation of the content object
+// which you can feed to a log writer
+//$writer->writeToLogExt($logger::getLoggerContent(), $logger::buildDirectivesForFileWriter());
+
+/*
+$keys_to_show= $logger::getFormatDescriptor()->getRegularFieldNames();
+$key_to_delete= array_search("cs-username", $keys_to_show);
+if ($key_to_delete) unset($keys_to_show[$key_to_delete]);
+$keys_to_show= array_reverse($keys_to_show);
+$writer->writeToLog(
+	$logger::getLoggerContent()->toArrayTyped($keys_to_show), 
+	$logger::getLoggerContent()->toArrayTypedMeta()
+);
+*/
+
+$writer->writeToLog(
+	$logger::getLoggerContent()->toArrayTyped(), 
+	$logger::getLoggerContent()->toArrayTypedMeta()
+);
+
+
+echo "<br/><br/>toArray: ";
+print_r($logger::getLoggerContent()->toArrayTyped());
+echo "<br/><br/>metaToArray: ";
+print_r($logger::getLoggerContent()->toArrayTypedMeta());
+
+?>
+
