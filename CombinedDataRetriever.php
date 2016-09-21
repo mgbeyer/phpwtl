@@ -8,14 +8,14 @@ require_once 'CommonDataRetriever.php';
   * Data retriever for the combined log format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.0
+  * @version v0.2.1
   * @api
   */
 class CombinedDataRetriever extends CommonDataRetriever {
 
 	/**
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -29,7 +29,7 @@ class CombinedDataRetriever extends CommonDataRetriever {
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
 							$referrer= static::getUrlOrigin().$_SERVER['REQUEST_URI'];
 						} else {
-							$referrer= isset($_SERVER['HTTP_referrer']) ? $_SERVER['HTTP_referrer'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "");
+							$referrer= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "");
 						}
 						$value= $referrer;
 					break;

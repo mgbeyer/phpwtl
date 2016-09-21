@@ -8,7 +8,7 @@ require_once 'aBasicDataRetriever.php';
   * Data retriever for the extended log file format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.0
+  * @version v0.2.1
   * @api
   */
 class ExtendedDataRetriever extends aBasicDataRetriever {
@@ -35,7 +35,7 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 	  * @param string $value Provide an (optional) value to pass thru to the LoggerContent object, so allowing for the injection of external data.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.5
+	  * @version v0.1.6
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -69,8 +69,8 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL);
-							$basepath= rtrim($_SERVER['SCRIPT_FILENAME'], basename($_SERVER["SCRIPT_FILENAME"]));
-							$basepath= "/".ltrim($basepath, $_SERVER['DOCUMENT_ROOT']);
+							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
+							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
 							$value= $basepath.$requestTarget;
 						} else {
 							$value= $_SERVER['REQUEST_URI'];
@@ -100,7 +100,7 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL);
-							$basepath= rtrim($_SERVER['SCRIPT_FILENAME'], basename($_SERVER["SCRIPT_FILENAME"]));
+							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
 								$value= filesize($requestpath);	
@@ -134,7 +134,7 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
 							$referrer= static::getUrlOrigin().$_SERVER['REQUEST_URI'];
 						} else {
-							$referrer= isset($_SERVER['HTTP_referrer']) ? $_SERVER['HTTP_referrer'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "-");
+							$referrer= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "-");
 						}
 						$value= $referrer;
 					break;

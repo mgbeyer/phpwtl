@@ -8,7 +8,7 @@ require_once 'aBasicDataRetriever.php';
   * Data retriever for the common log format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.1
+  * @version v0.2.2
   * @api
   */
 class CommonDataRetriever extends aBasicDataRetriever {
@@ -36,7 +36,7 @@ class CommonDataRetriever extends aBasicDataRetriever {
 	  * @param string $value Provide an (optional) value to pass thru to the LoggerContent object, so allowing for the injection of external data.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.3
+	  * @version v0.1.4
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -59,8 +59,8 @@ class CommonDataRetriever extends aBasicDataRetriever {
 						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);
-							$basepath= rtrim($_SERVER['SCRIPT_FILENAME'], basename($_SERVER["SCRIPT_FILENAME"]));
-							$basepath= "/".ltrim($basepath, $_SERVER['DOCUMENT_ROOT']);
+							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
+							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
 							$value= $_SERVER['REQUEST_METHOD']." ".$basepath.$requestTarget." ".$_SERVER['SERVER_PROTOCOL'];
 						} else {
 							$value= $_SERVER['REQUEST_METHOD']." ".$_SERVER['REQUEST_URI']." ".$_SERVER['SERVER_PROTOCOL'];
@@ -74,7 +74,7 @@ class CommonDataRetriever extends aBasicDataRetriever {
 						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);
-							$basepath= rtrim($_SERVER['SCRIPT_FILENAME'], basename($_SERVER["SCRIPT_FILENAME"]));
+							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
 								$value= filesize($requestpath);	
