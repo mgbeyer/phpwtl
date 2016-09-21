@@ -30,7 +30,7 @@ $myPolicies= array(
 		array(
 			'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
 			'flag' => CommonCombinedDRP::DRP_CC_CLR_CUSTOM,
-			'parameter' => 'phpWTL_ex-01_Combined-and-FileLogWriter.php'
+			'parameter' => 'Smiley.svg.png'
 		)
 	)
 );
