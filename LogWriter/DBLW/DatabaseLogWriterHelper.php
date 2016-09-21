@@ -75,7 +75,7 @@ class DatabaseLogWriterHelper {
 		if ($filename!="") {					
 			$pass= true;
 			$parts= pathinfo($filename);
-			$saveLocation= $parts["dirname"].FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
+			$saveLocation= FileLogWriterHelper::sanitizePath($parts["dirname"]).FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
 			$files_tag_open= '<Files "'.FileLogWriterHelper::sanitizeFilename($parts["basename"]).'">';
 			if (!$overwrite) {
 				$mode= "a";				
