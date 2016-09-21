@@ -8,7 +8,7 @@ require '/../FLW/FileLogWriterHelper.php';
   * Static helper class for DatabaseLogWriter (DBLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.4
+  * @version v0.1.5
   * @api
   */
 class DatabaseLogWriterHelper {
@@ -35,25 +35,25 @@ class DatabaseLogWriterHelper {
 	  * @return array
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.1
+	  * @version v0.1.2
 	  * @api
 	  */
 	static public function getConnectionParamsFromIni($handle_htaccess, $filename= null) {		
 		$ret= null;
 		
+		$filename= self::prepareIniPath($filename);
 		if (!$filename || $filename=="") {					
-			$filename= DatabaseLogWriter::CONN_PARAM_DEFAULT_INI;
+			$filename= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.DatabaseLogWriter::CONN_PARAM_DEFAULT_INI;
 		}
-		$filename= rtrim($filename, ".ini").".ini";
-		$location= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizeFilename($filename);		
-		
-		if ($handle_htaccess) {
-			$ok= static::prepareHtaccessProtection($filename);
-		} else {
-			$ok= true;
+				
+		if (file_exists($filename)) {
+			if ($handle_htaccess) {
+				$ok= static::prepareHtaccessProtection($filename);
+			} else {
+				$ok= true;
+			}
+			if ($ok) $ret= parse_ini_file($filename);
 		}
-		
-		if ($ok && file_exists($location)) $ret= parse_ini_file($location);
 		
 		return $ret;
 	}
@@ -66,16 +66,17 @@ class DatabaseLogWriterHelper {
 	  * @return boolean true if successful
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.1
+	  * @version v0.1.2
 	  * @api
 	  */
 	static public function prepareHtaccessProtection($filename, $overwrite= false) {
 		$ret= true;
 		
-		$saveLocation= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
 		if ($filename!="") {					
 			$pass= true;
-			$files_tag_open= '<Files "'.FileLogWriterHelper::sanitizeFilename($filename).'">';
+			$parts= pathinfo($filename);
+			$saveLocation= $parts["dirname"].FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
+			$files_tag_open= '<Files "'.FileLogWriterHelper::sanitizeFilename($parts["basename"]).'">';
 			if (!$overwrite) {
 				$mode= "a";				
 				if (file_exists($saveLocation)) {
@@ -105,19 +106,42 @@ class DatabaseLogWriterHelper {
 	  * @return array
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
 	static public function getDatatypeMappingsFromIni($filename= null) {		
 		$ret= null;
 		
+		$filename= self::prepareIniPath($filename);
 		if (!$filename || $filename=="") {					
-			$filename= DatabaseLogWriter::DATATYPE_MAPPINGS_DEFAULT_INI;
+			$filename= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.DatabaseLogWriter::DATATYPE_MAPPINGS_DEFAULT_INI;
 		}
-		$filename= rtrim($filename, ".ini").".ini";
-		$location= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizeFilename($filename);		
 		
-		if (file_exists($location)) $ret= parse_ini_file($location, true);
+		if (file_exists($filename)) $ret= parse_ini_file($filename, true);
+		
+		return $ret;
+	}
+	
+	/** 
+	  * Sanitize a given .ini path and filename.
+	  *
+	  * @param string $inifile
+	  * @return string
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  */
+	static protected function prepareIniPath($inifile) {
+		$ret= null;
+		
+		if ($inifile) {
+			$document_root= FileLogWriterHelper::pathHelperHarmonizeTrailingSeparator($_SERVER['DOCUMENT_ROOT']);
+			$parts= pathinfo(FileLogWriterHelper::sanitizePath($inifile));			
+			if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($parts["dirname"], $document_root)) {
+				$path= FileLogWriterHelper::sanitizePath($document_root.$parts["dirname"]);
+				$ret= $path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
+			}
+		}
 		
 		return $ret;
 	}

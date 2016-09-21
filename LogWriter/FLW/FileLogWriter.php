@@ -10,16 +10,16 @@ require 'FileLogWriterHelper.php';
   * File log writer (FLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.7
+  * @version v0.1.8
   * @api
   */
 class FileLogWriter implements iBasicLogWriter {
 	/** Prefix for ini files. */
 	const WRITER_PREFIX= "FLW";
 	/** Path for main configuration file. */
-	const SETTINGS_INI_PATH= self::WRITER_PREFIX."-default.ini";
+	const SETTINGS_INI_PATH= "../../config/".self::WRITER_PREFIX."-default.ini";
 	/** Path for credentials configuration file. */
-	const USER_INI_PATH= self::WRITER_PREFIX."-default-cred.ini";
+	const USER_INI_PATH= "../../config/".self::WRITER_PREFIX."-default-cred.ini";
 	/** Minimum length for a password. */
 	const PW_STRENGTH= 8;
 
@@ -62,8 +62,6 @@ class FileLogWriter implements iBasicLogWriter {
 		$this->validateIniKey("rotation_policy");
 
 		$this->document_root= FileLogWriterHelper::pathHelperHarmonizeTrailingSeparator($_SERVER['DOCUMENT_ROOT']);
-		//$this->script_path= rtrim($_SERVER['SCRIPT_FILENAME'], basename($_SERVER["SCRIPT_FILENAME"]));	// remove filename
-		//$this->script_path= FileLogWriterHelper::pathHelperHarmonizeTrailingSeparator($this->script_path);		
 		$this->full_logs_path= FileLogWriterHelper::sanitizePath($this->document_root.$this->logsPath);
 		
 		$this->initWriter($inifile);
@@ -76,7 +74,7 @@ class FileLogWriter implements iBasicLogWriter {
 	  * @param string $inifile Config. file.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.5
+	  * @version v0.1.6
 	  */
 	protected function initWriter($inifile= null) {
 		$this->ready= true;
@@ -84,9 +82,14 @@ class FileLogWriter implements iBasicLogWriter {
 
 		if ($inifile) {
 			// read individual ini
-			$settings_path= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizeFilename(static::WRITER_PREFIX."-".$inifile.".ini");
-			$cred_path= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizeFilename(static::WRITER_PREFIX."-".$inifile."-cred.ini");
+			$parts= pathinfo(FileLogWriterHelper::sanitizePath($inifile));			
+			if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($parts["dirname"], $this->document_root)) {
+				$path= FileLogWriterHelper::sanitizePath($this->document_root.$parts["dirname"]);
+				$settings_path= $path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
+				$cred_path= $path.FileLogWriterHelper::sanitizeFilename($parts["filename"])."-cred.".$parts["extension"];
+			}
 		} else {
+			// attempt to read default ini
 			$settings_path= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.static::SETTINGS_INI_PATH;
 			$cred_path= __DIR__.FileLogWriterHelper::FOLDER_SEPARATOR.static::USER_INI_PATH;
 		}

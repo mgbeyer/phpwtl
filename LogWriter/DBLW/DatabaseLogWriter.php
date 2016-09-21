@@ -15,16 +15,16 @@ require DBAL_BASE_PATH.'lib/Doctrine/Common/ClassLoader.php';
   * Database log writer (DBLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.4
+  * @version v0.2.5
   * @api
   */
 class DatabaseLogWriter implements iBasicLogWriter {
 	/** Prefix for ini files. */
 	const WRITER_PREFIX= "DBLW";
 	/** default name for connection parameter ini file. */
-	const CONN_PARAM_DEFAULT_INI= self::WRITER_PREFIX."-ConnParam.ini";
+	const CONN_PARAM_DEFAULT_INI= "../../config/".self::WRITER_PREFIX."-ConnParam.ini";
 	/** default name for datatype mappings ini file. */
-	const DATATYPE_MAPPINGS_DEFAULT_INI= self::WRITER_PREFIX."-DatatypeMappings.ini";
+	const DATATYPE_MAPPINGS_DEFAULT_INI= "../../config/".self::WRITER_PREFIX."-DatatypeMappings.ini";
 	/** Meta table suffix. */
 	const META_SUFFIX= "_meta";
 
