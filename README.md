@@ -478,10 +478,9 @@ FLW will handle the creation and alteration of all neccessary files for .htacces
 #### Individual logging for multiple applications 
 This feature is available if multiple settings files like this one are configured.
 
-To do so you have to provide individual .ini file(s) in the same folder as the default .ini file and adhere to the
-following naming scheme: *"FLW-yourname.ini"* for the settings and (if "htaccess_protection" is on) *"FLW-yourname-cred.ini"*
-for the user/password credentials. To have the log writer read your .ini file (instead of the default file), initialize 
-the writer with "yourname" as a parameter (don't append the .ini extension).
+To do so you have to provide individual .ini file(s) for the settings and (if "htaccess_protection" is on) *"yourinifile-cred.ini"*
+for the user/password credentials located in the same directory as your configuration .ini file. To have the log writer read your .ini file (instead of the default file), initialize 
+the writer with the path (and name) to your .ini file as a parameter. All default .ini files are expected to be in the "*config*" folder of your phpWTL installation.
 	
 #### FLW credentials file format (FLW-default-cred.ini.example):
 
@@ -619,7 +618,7 @@ The *"DatabaseLogWriterHelper"* class provides a method to read mapping paramete
 
 	$datatypeMappings= DatabaseLogWriterHelper::getDatatypeMappingsFromIni($inifile);
 	
-Ini files have to be located in the same folder as DBLW. Per default (if you omit the *$inifile* parameter) all mappings are read from the default ini file *"DBLW-DatatypeMappings.ini"*. *"$inifile*" might be given with or without the ".ini" extension.
+Per default (if you omit the *$inifile* parameter) all mappings are read from the default ini file *"DBLW-DatatypeMappings.ini"* located in the *"config"* folder of your phpWTL installation.
 
 Here's a structural example of a custom datatype mappings file:
 
@@ -676,7 +675,7 @@ The *"DatabaseLogWriterHelper"* class provides a method to read those parameters
 
 	$connectionParams= DatabaseLogWriterHelper::getConnectionParamsFromIni($handle_htaccess, $inifile);
 	
-Ini files have to be located in the same folder as DBLW. Per default (if you omit the *$inifile* parameter) all connection parameters are read from the default ini file *"DBLW-ConnParam.ini"*. *"$inifile*" might be given with or without the ".ini" extension.
+Per default (if you omit the *$inifile* parameter) all connection parameters are read from the default ini file *"DBLW-ConnParam.ini"* located in the *"config"* folder of your phpWTL installation.
 
 The *$handle_htaccess* parameter might be set to "true" if you want .htaccess protection for your .ini file (this might also be done manually with the help of the *"prepareHtaccessProtection"* method):
 	
