@@ -5,12 +5,12 @@ namespace phpWTL;
   * General global includes
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.3
+  * @version v0.1.4
   * @api All constant names (actual values might be subject to change)
   */
 class phpWTL {
 	/** Overall phpWTL version/revision. */
-	const VERSION= "0.3.2-alpha";
+	const VERSION= "0.3.3-alpha";
 	/** Default character encoding. */
 	const DEFAULT_ENCODING= "UTF-8";
 	/** Default character encoding detection order. */
