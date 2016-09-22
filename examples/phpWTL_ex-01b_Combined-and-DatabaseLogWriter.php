@@ -47,16 +47,11 @@ print_r($logger->getFormatDescriptor()->getFieldNames());
 // do the actual logging (disable formatter to prevent field delimiters in order to get the data type right!)
 $logger->log(array("format" => false));
 
-// you can individually change fields content after logging
-// (but then you might have to apply validator or formatter yourself afterwards if needed)
-$myval= "hello world!";
-if ($logger->getDataValidator()->isValid("user_id", $myval)) {
-	$logger->getDataRetriever()->setFieldContent("user_id", $myval);
-	$logger->getDataFormatter()->formatAllField("user_id");
-}
+// individually change fields content after logging
+$logger->getDataRetriever()->setFieldContent("user_id", "hello world!");
 
 // define connection parameters for your database
-$connectionParams = array(
+$connectionParams= array(
     'dbname' => 'test',
     'user' => 'test',
     'password' => 'test',
@@ -66,7 +61,7 @@ $connectionParams = array(
     'driver' => 'mysqli',
 );
 
-// define parameters database log writer
+// define parameters for database log writer
 $writerParams = array(
 	'table' => $logger->getFormatDescriptor()->getformatPrefix()."test_table",
 	'safety' => DatabaseLogWriterHelper::SAFETY_NONE,
