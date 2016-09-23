@@ -68,21 +68,22 @@ Yes, right. Though a PHP logger can "simulate" quite much here, it's  in the nat
 <br/>
 
 <a name="features"></a>
-### Logging hits to your PHP application(s) (and more) - as authentic, painless and also flexible as possible [(^)](#_top)
+### Logging hits to your PHP application(s)... and more! [(^)](#_top)
+#### As authentic, painless and also flexible as possible.
 
-Key features of phpWhatTheLog include:
+Key features of phpWhatTheLog:
 
 * Statistical access logging similar to a webserver:
-	* Logging in Combined, NCSA Common or W3C Extended format out-of-the-box, just like the real thing (see: *[SUPPORTED FORMATS](#formats)*).
+	* Logging in Apache Combined, NCSA Common or W3C Extended format out-of-the-box, just like the real thing (see: *[SUPPORTED FORMATS](#formats)*).
 * PHP application error/event logging:
 	* Loglevel, optional buffered logging/storage, context data/array support, exception object support, context value interpolation.
-* Highly modular and customizable architecture (e.g. logging itself is independent from actual log data storage).
-* Character encoding facility for log data output.
-* Flexible log storage:
+* Flexible log data storage:
 	* Logging the "classic" way to a file, with log rotation capabilities.
 	* Writing customizable CSV data
 	* Storing logs in a relational database, vendor independent by using a PDO based abstraction layer (Doctrine 2 DBAL).
+* Highly modular and customizable architecture (e.g. logging itself is independent from actual log data storage).
 * The architecture allows for loosely coupled modules so developers can easily modify and/or replace logically related functionality (logging format, data retrieval, data validation, data formatting, log writing).
+* Character encoding facility for log data output.
 * Many useful configurable settings for logging and log storage (e.g. logging multiple applications separately).
 
 <br/>
