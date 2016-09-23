@@ -71,7 +71,13 @@ Yes, right. Though a PHP logger can "simulate" quite much here, it's  in the nat
 ### Logging hits to your PHP application(s)... and more! [(^)](#_top)
 #### As authentic, painless and also flexible as possible.
 
-Key features of phpWhatTheLog:
+Access/user statistics logging was specially designed for usage on a freehosting webspace with no access to real Apache logs and other general restrictions:
+* Logging in wide-spread formats as authentic and close to a real webserver log as possible.
+* No shell access needed! This means pure FTP installation without the need for tools like <em>composer</em>.
+* Automated .htaccess based security concept for credentials and logfiles on a webspace where every accessible folder is potentially exposed.
+* Minimal dependencies on specific PHP modules or extensions. On free webspace you don't have much choice what is installed. So phpWTL tries to be as frugal as possible and uses mature wide-spread and built-in extensions.
+
+#### Key features of phpWhatTheLog:
 
 * Statistical access logging similar to a webserver:
 	* Logging in Apache Combined, NCSA Common or W3C Extended format out-of-the-box, just like the real thing (see: *[SUPPORTED FORMATS](#formats)*).
