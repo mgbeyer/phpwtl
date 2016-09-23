@@ -904,7 +904,7 @@ If the buffer size limit is reached any subsequent call to *log()* or *store()* 
 <a name="apidoc"></a>
 ## API documentation [(^)](#_top)
 
-This is powered by *phpDocumentor*, auto-generated based on all those fancy DocBlock/PHPdoc annotations the sourcecode is riddled with. [A snapshot can be browsed here](http://pengonoir.bplaced.net/phpwtl/api/namespaces/phpWTL.html). There's also a brief overview of the [class hierarchy](http://pengonoir.bplaced.net/phpwtl/api/graphs/class.html).
+This is powered by *phpDocumentor*, auto-generated based on all those fancy DocBlock/PHPdoc annotations the sourcecode is riddled with. [A snapshot can be browsed here](https://mgbeyer.github.io/phpwtl/api/namespaces/phpWTL.html). There's also a brief overview of the [class hierarchy](https://mgbeyer.github.io/phpwtl/api/graphs/class.html).
 <br/>
 _BTW: This project adheres to [semantic versioning](http://semver.org/)._
 	
