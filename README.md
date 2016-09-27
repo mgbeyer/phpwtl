@@ -344,7 +344,7 @@ If you use *"phpWTL::ENCODING_ASSUMPTION_PROBE_DATA"* to "auto-detect" encoding 
 This means the detection algorithm just keeps trying, in order, the encodings you specified and then returns the first one under which the bytestream represented by the given string would be valid. The order ranges from "less specific" to "more specific". So if a given string which is supposed to be *"ISO"* doesn't contain special ISO specific characters, the first proper match will be taken (UTF-8). So auto-detection will say: "This string is UTF-8". You can change this behavior to anything you want and consider useful for your scenario:
 
 	$default_order= $logger->getLoggerContent()->getEncodingDetectionOrder();
-	$new_order= array_merge($default_order, array('KOI8-R'));
+	$new_order= $default_order.', KOI8-R';
 	$logger->getLoggerContent()->setEncodingDetectionOrder($new_order);
 	
 **Some important aspects to consider!**

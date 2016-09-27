@@ -5,7 +5,7 @@ namespace phpWTL;
   * General global includes
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.4
+  * @version v0.1.5
   * @api All constant names (actual values might be subject to change)
   */
 class phpWTL {
@@ -14,7 +14,7 @@ class phpWTL {
 	/** Default character encoding. */
 	const DEFAULT_ENCODING= "UTF-8";
 	/** Default character encoding detection order. */
-	const DEFAULT_ENCODING_DETECTION_ORDER= array("UTF-8", "Windows-1252", "ISO-8859-1");
+	const DEFAULT_ENCODING_DETECTION_ORDER= "UTF-8, Windows-1252, ISO-8859-1";
 	/** Flag for PHP default character encoding. */
 	const SYSTEM_ENCODING= "_e_sys_";
 	/** Assume system/PHP default character encoding. */

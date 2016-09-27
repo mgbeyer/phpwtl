@@ -209,7 +209,7 @@ class LoggerContent {
 	}
 
 	/**
-	  * @param array $encoding Set the character encoding (null or empty to disable encoding). 
+	  * @param string $encoding Set the character encoding (CSV string, null or empty to disable encoding). 
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
 	  * @version v0.1.0
