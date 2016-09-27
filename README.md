@@ -401,9 +401,9 @@ You might want to change the standard field delimiter (as pre-defined in the for
 	
 The LoggerContent object offers a couple methods which might be utilized in situations where
 
-1) not all of the fields are intended to be written to the log
-1) additional fields are intended to be written to the log which are not flagged as "default"
-1) log fields are intended to be written in a specific non-default order
+* not all of the fields are intended to be written to the log
+* additional fields are intended to be written to the log which are not flagged as "default"
+* log fields are intended to be written in a specific non-default order
 		
 **toString($whitelist)** might be used for a delimiter-separated string representation, **toArray($whitelist)** (**toArrayMeta($whitelist)**) might be used to obtain an associative array of (meta) fields and their contents, with field names as keys. **$whitelist** contains an array of field names and specifies the fields given back and their order. If **$whitelist** is omitted only fields which are flagged as *"default"* will be returned. 
 <br/>

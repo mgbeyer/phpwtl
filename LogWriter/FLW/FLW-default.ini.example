@@ -3,10 +3,10 @@
 ; 	FileLogWriter (FLW) default main configuration file
 ;
 ; Note: Individual logging for multiple applications is available if multiple settings files like this one are configured.
-; To do so you have to provide individual .ini file(s) in the same folder as this default .ini file and adhere to the
-; following naming scheme: "FLW-yourname.ini" for the settings and (if "htaccess_protection" is on) "FLW-yourname-cred.ini"
-; for the user/password credentials. To have the Log writer read your .ini file (instead of this default file), initialize 
-; the writer with "yourname" as a parameter (don't append the .ini extension).
+; To do so you have to provide individual .ini file(s) for the settings and (if "htaccess_protection" is on) "yourinifile-cred.ini"
+; for the user/password credentials located in the same directory as your configuration .ini file. To have the log writer read your .ini 
+; file (instead of the default file), initialize the writer with the path (and name) to your .ini file as a parameter. 
+; All default .ini files are expected to be in the "config" folder of your phpWTL installation.
 ;
 
 ; method of line termination: 
