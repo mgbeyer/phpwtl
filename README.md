@@ -75,7 +75,7 @@ Access/user statistics logging was specially designed for usage on a freehosting
 * Logging in wide-spread formats as authentic and close to a real webserver log as possible.
 * No shell access needed! This means pure FTP installation without the need for tools like <em>composer</em>.
 * Automated .htaccess based security concept for credentials and logfiles on a webspace where every accessible folder is potentially exposed.
-* Minimal dependencies on specific PHP modules or extensions. On free webspace you don't have much choice what is installed. So phpWTL tries to be as frugal as possible and uses mature wide-spread and built-in extensions.
+* Minimal dependencies on specific PHP modules or extensions. On free webspace you don't have much of a choice what is installed. So phpWTL tries to be as frugal as possible and uses mature wide-spread and built-in extensions. It even runs smoothly on "ancient" versions of PHP like 5.6 or even lower.
 
 #### Key features of phpWhatTheLog:
 
