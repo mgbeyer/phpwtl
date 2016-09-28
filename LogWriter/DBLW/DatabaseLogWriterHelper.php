@@ -75,7 +75,7 @@ class DatabaseLogWriterHelper {
 		if ($filename!="") {					
 			$pass= true;
 			$parts= pathinfo($filename);
-			$saveLocation= "/".FileLogWriterHelper::sanitizePath($parts["dirname"]).FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
+			$saveLocation= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($parts["dirname"]).FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
 			$files_tag_open= '<Files "'.FileLogWriterHelper::sanitizeFilename($parts["basename"]).'">';
 			if (!$overwrite) {
 				$mode= "a";				
@@ -139,7 +139,7 @@ class DatabaseLogWriterHelper {
 			$parts= pathinfo(FileLogWriterHelper::sanitizePath($inifile));			
 			if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($parts["dirname"], $document_root)) {
 				$path= FileLogWriterHelper::sanitizePath($document_root.$parts["dirname"]);
-				$ret= "/".$path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
+				$ret= FileLogWriterHelper::FOLDER_SEPARATOR.$path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
 			}
 		}
 		
