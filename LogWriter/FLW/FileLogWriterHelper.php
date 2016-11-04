@@ -105,7 +105,7 @@ class FileLogWriterHelper {
 	  * @return string The sanatized string.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
 	static public function sanitizeFilename($name) {
@@ -120,7 +120,6 @@ class FileLogWriterHelper {
 	  * - Correct separator count
 	  * - Correct dot count
 	  * - Whitelist permitted characters, OS dependent (sift out everything else). For Windows: Alphanumeric, hyphen, underscore, colon, dot, space, German umlauts. For Linux or any other OS: Alphanumeric, hyphen, underscore, tilde, dot.
-	  * - Cut-off leading directory separator (no absolute path!)
 	  * - Harmonize trailing directory separator (make sure one is in place regardless of original path)
 	  *
 	  * @param string $path
@@ -151,9 +150,7 @@ class FileLogWriterHelper {
 			$pat= "/[^a-zA-Z0-9-_~.\\".self::FOLDER_SEPARATOR."]/";
 		}	
 		$path= preg_replace($pat, "", $path);
-		
-		// cut-off leading directory separator (no absolute path!)
-		$path= self::pathHelperCutLeadingSeparator($path);
+
 		// harmonize trailing directory separator (make sure one is in place regardless of original path)
 		$path= self::pathHelperHarmonizeTrailingSeparator($path);
 		
@@ -163,6 +160,8 @@ class FileLogWriterHelper {
 	/** 
 	  * Make sure a given path does at no time leave or become equal to another path (aka "the document root"):
 	  *
+	  * - Ensure that the first N characters of $path are exactly the same as $root, reject up-front if not
+	  * - If true, allow for OS agnostic level search (eg. snip away leading Win C:)
 	  * - The first time $path goes above $root, reject it
 	  * - If $path ends up at the same level as $root, reject it
 	  *
@@ -171,32 +170,43 @@ class FileLogWriterHelper {
 	  * @return boolean
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
 	static public function pathLeavesOrEqualsRoot($path, $root) {	
 		$ret= false;
-		$threshold= self::pathDepth($root);
-		$pointer= $threshold;
-		foreach (explode(self::FOLDER_SEPARATOR, $path) as $k=>$p) {
-			switch ($p) {
-				case ".":
-				case "":
-				break;
-				case "..":
-					$pointer--;
-				break;
-				default:
-					$pointer++;
-				break;
+		
+		$path= rtrim($root, self::FOLDER_SEPARATOR).$path;
+		
+		// Ensure that the first N characters of $path are exactly the same as $root, reject up-front if not
+		if (self::strStartsWith($path, $root)) {
+		
+			// OS agnostic absolute path
+			if (preg_match('/[A-Za-z]{1}:/', $path, $cut)>0) $path= substr($path, strlen($cut[0]));
+			if (preg_match('/[A-Za-z]{1}:/', $root, $cut)>0) $root= substr($root, strlen($cut[0]));
+			$threshold= self::pathDepth($root);
+			$pointer= $threshold;
+			foreach (explode(self::FOLDER_SEPARATOR, $path) as $k=>$p) {
+				switch ($p) {
+					case ".":
+					case "":
+					break;
+					case "..":
+						$pointer--;
+					break;
+					default:
+						$pointer++;
+					break;
+				}
+				// first time path goes above document root level, reject it (potential security issue!)
+				if ($pointer<$threshold) {
+					$ret= true;				
+				}
 			}
-			// first time path goes above document root level, reject it (potential security issue!)
-			if ($pointer<$threshold) {
-				$ret= true;				
-			}
+			// if path ends up at same level as document root, reject it (we don't want .htaccess to interfere with the document root!)		 
+			if ($pointer==$threshold) $ret= true;
 		}
-		// if path ends up at same level as document root, reject it (we don't want .htaccess to interfere with the document root!)		 
-		if ($pointer==$threshold) $ret= true;
+		
 		return $ret;
 	}
 
@@ -211,6 +221,7 @@ class FileLogWriterHelper {
 	  * @version v0.1.0
 	  * @api
 	  */
+	// todo: omit or rework, see above
 	static public function pathHelperCutLeadingSeparator($path) {
 		return ltrim($path, self::FOLDER_SEPARATOR);
 	}
@@ -305,6 +316,18 @@ class FileLogWriterHelper {
 		}
 				
 		return $ret;
+	}
+
+	
+	private static function strStartsWith($haystack, $needle) {
+		 $length= strlen($needle);
+		 return (substr($haystack, 0, $length) === $needle);
+	}
+
+	private static function strEndsWith($haystack, $needle) {
+		$length= strlen($needle);
+		if ($length == 0) return true;
+		return (substr($haystack, -$length) === $needle);
 	}
 
 }

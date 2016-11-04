@@ -66,7 +66,7 @@ class DatabaseLogWriterHelper {
 	  * @return boolean true if successful
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.3
+	  * @version v0.1.4
 	  * @api
 	  */
 	static public function prepareHtaccessProtection($filename, $overwrite= false) {
@@ -75,7 +75,7 @@ class DatabaseLogWriterHelper {
 		if ($filename!="") {					
 			$pass= true;
 			$parts= pathinfo($filename);
-			$saveLocation= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($parts["dirname"]).FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
+			$saveLocation= FileLogWriterHelper::sanitizePath($parts["dirname"]).FileLogWriterHelper::FOLDER_SEPARATOR.".htaccess";		
 			$files_tag_open= '<Files "'.FileLogWriterHelper::sanitizeFilename($parts["basename"]).'">';
 			if (!$overwrite) {
 				$mode= "a";				
@@ -129,7 +129,7 @@ class DatabaseLogWriterHelper {
 	  * @return string
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.1
+	  * @version v0.1.2
 	  */
 	static protected function prepareIniPath($inifile) {
 		$ret= null;
@@ -139,7 +139,7 @@ class DatabaseLogWriterHelper {
 			$parts= pathinfo(FileLogWriterHelper::sanitizePath($inifile));			
 			if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($parts["dirname"], $document_root)) {
 				$path= FileLogWriterHelper::sanitizePath($document_root.$parts["dirname"]);
-				$ret= FileLogWriterHelper::FOLDER_SEPARATOR.$path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
+				$ret= $path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
 			}
 		}
 		

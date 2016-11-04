@@ -10,7 +10,7 @@ namespace phpWTL;
   */
 class phpWTL {
 	/** Overall phpWTL version/revision. */
-	const VERSION= "0.3.3-alpha";
+	const VERSION= "0.3.4-alpha";
 	/** Default character encoding. */
 	const DEFAULT_ENCODING= "UTF-8";
 	/** Default character encoding detection order. */

@@ -48,7 +48,7 @@ class FileLogWriter implements iBasicLogWriter {
 	  * @example "./LogWriter/FLW/FLW-default.ini" See "FLW-default.ini" for a detailed description.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.2
+	  * @version v0.1.3
 	  * @api
 	  */
 	public function __construct($inifile= null) {
@@ -62,7 +62,7 @@ class FileLogWriter implements iBasicLogWriter {
 		$this->validateIniKey("rotation_policy");
 
 		$this->document_root= FileLogWriterHelper::pathHelperHarmonizeTrailingSeparator($_SERVER['DOCUMENT_ROOT']);
-		$this->full_logs_path= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($this->document_root.$this->logsPath);
+		$this->full_logs_path= FileLogWriterHelper::sanitizePath($this->document_root.$this->logsPath);
 		
 		$this->initWriter($inifile);
 	}
@@ -74,17 +74,17 @@ class FileLogWriter implements iBasicLogWriter {
 	  * @param string $inifile Config. file.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.7
+	  * @version v0.1.8
 	  */
 	protected function initWriter($inifile= null) {
 		$this->ready= true;
 		$this->state= "ok";
 
 		if ($inifile) {
-			// read individual ini
+			// read individual ini			
 			$parts= pathinfo(FileLogWriterHelper::sanitizePath($inifile));			
 			if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($parts["dirname"], $this->document_root)) {
-				$path= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($this->document_root.$parts["dirname"]);
+				$path= FileLogWriterHelper::sanitizePath($this->document_root.$parts["dirname"]);
 				$settings_path= $path.FileLogWriterHelper::sanitizeFilename($parts["basename"]);
 				$cred_path= $path.FileLogWriterHelper::sanitizeFilename($parts["filename"])."-cred.".$parts["extension"];
 			}
@@ -268,7 +268,7 @@ class FileLogWriter implements iBasicLogWriter {
 	  * @return array Configuration errors.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.2
+	  * @version v0.1.3
 	  */
 	protected function validateIniKey($key, $value= null) {
 		$err= null;
@@ -325,7 +325,7 @@ class FileLogWriter implements iBasicLogWriter {
 					$path= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($value);
 					if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($path, $this->document_root)) {
 						$this->logsPath= $path;
-						$this->full_logs_path= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::sanitizePath($this->document_root.$this->logsPath);
+						$this->full_logs_path= FileLogWriterHelper::sanitizePath($this->document_root.$this->logsPath);
 					} else array_push($this->warning, "setting 'logs_path' violates webserver document root, ".$value);
 				} else array_push($this->warning, "setting 'logs_path' is empty, using default");
 			break;
