@@ -143,14 +143,16 @@ class LogBuffer {
 	  *
 	  * @param object $content
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.1
+	  * @version v0.1.2
 	  * @api
 	  */
     public function store($content) {
 		if ($content) {
 			$this->_content_buffer[]= clone $content;			
-			if ($this->getContentBufferSize()>=$this->getBufferSize()) {
-				$this->flush();
+			if ($this->getBufferSize() < LogBufferHelper::BUFFER_INFINITE) {
+				if ($this->getContentBufferSize()>=$this->getBufferSize()) {
+					$this->flush();
+				}
 			}
 		}
 	}

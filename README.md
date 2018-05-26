@@ -841,7 +841,8 @@ Log entries can be aggregated using the *"LogBuffer"* wrapper class. Logging con
 	$params= array (
 		// amount of content objects (=log entries or log events) to be buffered 
 		// before flush() will be called automatically
-		// (set to LogBufferHelper::BUFFER_OFF to disable buffering)
+		// (set to LogBufferHelper::BUFFER_OFF to disable buffering,
+        //  set to LogBufferHelper::BUFFER_INFINITE to disable auto flush)
 		'buffer_size' => 20;
 	);
 
