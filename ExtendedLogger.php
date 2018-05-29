@@ -2,7 +2,7 @@
 namespace phpWTL;
 use phpWTL\DataRetrievalPolicy;
 use phpWTL\DataRetrievalPolicyHelper;
-use phpWTL\ExtendedDRP;
+use phpWTL\DRP;
 use phpWTL\aBasicLogger;
 use phpWTL\ExtendedFormatDescriptor;
 use phpWTL\LoggerContent;
@@ -12,7 +12,7 @@ use phpWTL\ExtendedDataFormatter;
 
 require_once 'DataRetrievalPolicy.php';
 require_once 'DataRetrievalPolicyHelper.php';
-require_once 'ExtendedDRP.php';
+require_once 'DRP.php';
 require_once 'aBasicLogger.php';
 require_once 'ExtendedFormatDescriptor.php';
 require_once 'LoggerContent.php';
@@ -24,7 +24,7 @@ require_once 'ExtendedDataFormatter.php';
   * Logger for the extended log file format (see: https://www.w3.org/TR/WD-logfile.html). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.3.3
+  * @version v0.3.4
   * @api
   */
 class ExtendedLogger extends aBasicLogger {
@@ -51,8 +51,8 @@ class ExtendedLogger extends aBasicLogger {
 		static::$dataRetriever= ExtendedDataRetriever::getInstance(array(static::$loggerContent, static::$retrievalPolicies));
 		static::$dataValidator= GenericDataValidator::getInstance(static::$loggerContent);
 		static::$dataFormatter= ExtendedDataFormatter::getInstance(static::$loggerContent);
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::initializeBuffering();
 		}
 		static::takeTime();
@@ -62,10 +62,10 @@ class ExtendedLogger extends aBasicLogger {
 	  * Buffer initialization for ContentLengthRetrieval policy.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  */
 	protected function initializeBuffering() {
-		ob_end_clean();
+		if (count(ob_get_status())>0) ob_end_clean();
 		ob_start();
 	}
 	
@@ -79,9 +79,28 @@ class ExtendedLogger extends aBasicLogger {
 		$ob_size= ob_get_length();
 		ob_end_flush();
 		if (static::$dataRetriever) {
-			DataRetrievalPolicyHelper::setDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, $ob_size);
+			DataRetrievalPolicyHelper::setDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL, $ob_size);
 			static::$dataRetriever->setDataRetrievalPolicies(static::$retrievalPolicies);
 		}
+	}
+
+	/**
+	  * Return PHP output buffer.
+	  *
+	  * @return string buffer content (null if logging mode is not buffered)
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getBuffer() {
+		$ret= null;
+
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
+			$ret= ob_get_contents();
+		}		
+		return $ret;
 	}
 
 	/**
@@ -142,8 +161,8 @@ class ExtendedLogger extends aBasicLogger {
 	protected function loadDataRetrievalPoliciesDefault() {
 		static::$retrievalPolicies= array(
 			new DataRetrievalPolicy(array(
-				'name' => ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL, 
-				'flag' => ExtendedDRP::DRP_EXT_CLR_SCRIPT
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_SCRIPT
 			)),
 		);
 	}
@@ -168,8 +187,8 @@ class ExtendedLogger extends aBasicLogger {
 			static::loadDataRetrievalPoliciesDefault();
 		}
 		if (static::$dataRetriever) static::$dataRetriever->setDataRetrievalPolicies(static::$retrievalPolicies);
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::initializeBuffering();
 		}
 	}
@@ -205,8 +224,8 @@ class ExtendedLogger extends aBasicLogger {
 			}
 		}
 
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::finalizeBuffering();
 		}
 		if (static::$dataRetriever) {

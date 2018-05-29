@@ -8,7 +8,7 @@ require_once 'aBasicDataRetriever.php';
   * Data retriever for the extended log file format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.1
+  * @version v0.2.2
   * @api
   */
 class ExtendedDataRetriever extends aBasicDataRetriever {
@@ -66,9 +66,9 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 					break;
 					case "cs-uri-stem":
 					case "cs-uri-query":
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
-							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL);
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
+							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
 							$value= $basepath.$requestTarget;
@@ -97,9 +97,9 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 					break;
 					case "sc-bytes":
 						$value= "";						
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
-							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL);
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
+							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
@@ -107,9 +107,9 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 							} else {
 								static::$loggerContent->__set("sc-status", "404");
 							}						
-						} elseif (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-								  DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_BUFFER) {
-							$value= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL);
+						} elseif (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+								  DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
+							$value= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 						} else {				
 							$value= filesize($_SERVER['SCRIPT_FILENAME']);
 						}
@@ -130,8 +130,8 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 						$value= (array_key_exists ('HTTP_COOKIE', $_SERVER) ? $_SERVER['HTTP_COOKIE'] : "-");
 					break;
 					case "cs-referrer":
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, ExtendedDRP::DRP_EXT_CONTENT_LENGTH_RETRIEVAL)==ExtendedDRP::DRP_EXT_CLR_CUSTOM) {
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
 							$referrer= static::getUrlOrigin().$_SERVER['REQUEST_URI'];
 						} else {
 							$referrer= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "-");

@@ -5,12 +5,14 @@ namespace phpWTL;
   * Helper class for log buffer
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.1
+  * @version v0.1.2
   * @api All constant names (actual values might be subject to change)
   */
 class LogBufferHelper {
 	/** Disable buffering (buffer becomes a mere wrapper) */
 	const BUFFER_OFF= 0;
+	/** Disable auto flush feature */
+	const BUFFER_INFINITE= PHP_INT_MAX;
 	/** Default buffer size */
 	const BUFFER_SIZE_DEFAULT= 32;
 	/** Callback: Flush iteration (content objects) */

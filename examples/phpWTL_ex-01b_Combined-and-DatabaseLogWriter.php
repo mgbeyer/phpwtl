@@ -5,12 +5,12 @@
   * Combined Logger and DatabaseLogWriter (DBLW).
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.0
+  * @version v0.1.1
   */
 
 use phpWTL\phpWTL;
 use phpWTL\CombinedLogger;
-use phpWTL\CommonCombinedDRP;
+use phpWTL\DRP;
 use phpWTL\DataRetrievalPolicy;
 use phpWTL\DataRetrievalPolicyHelper;
 use phpWTL\LogWriter\DBLW\DatabaseLogWriter;
@@ -28,8 +28,8 @@ require_once '../FormatDescriptorHelper.php';
 $myPolicies= array(
 	new DataRetrievalPolicy(
 		array(
-			'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
-			'flag' => CommonCombinedDRP::DRP_CC_CLR_CUSTOM,
+			'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+			'flag' => DRP::DRP_CLR_CUSTOM,
 			'parameter' => 'Smiley.svg.png'
 		)
 	)

@@ -1,7 +1,7 @@
 # phpWhatTheLog (phpWTL)
 ### a PHP logging framework
 
-Michael Beyer, 07-2016, rev. 0.3.4-alpha (2016/11/04)
+Michael Beyer, 07-2016, rev. 0.3.5-alpha (2018/05/26)
 <br/>
 <mgbeyer@gmx.de>
 
@@ -18,8 +18,6 @@ But if you belong to the group of people - like I do - who like to scrounge from
 [PURPOSE](#preface)
 ~
 [FEATURES](#features)
-~
-[LIMITATIONS](#drawbacks)
 ~
 [GENERAL USAGE](#usage)
 
@@ -50,13 +48,17 @@ But if you belong to the group of people - like I do - who like to scrounge from
 [API DOCUMENTATION](#apidoc)
 ~
 [SUPPORTED FORMATS](#formats)
+~
+[EXAMPLES](#examples)
 
 >>>>>>**_ALL THE REST_** &nbsp;&nbsp;
+[GOODIES](#goodies)
+~
 [CONTRIBUTING](#contributing)
 ~
 [LICENSE](#license)
 ~
-[OTHER STUFF](#drawback_1)
+[LIMITATIONS](#drawbacks)
 
 <br/>
 
@@ -94,19 +96,6 @@ Access/user statistics logging was specially designed for usage on a freehosting
 
 <br/>
 
-<a name="drawbacks"></a>
-### Common drawbacks of logging by script - and how to deal with them (maybe) [(^)](#_top)
-
-* You can't expect to log everything (and you can't expect some of the things you actually *can* log to be logged easy-peasy)
-	* To log a hit to the script you include the logger functionality is pretty straight-forward. Logging access to collateral (static) files is not *that* straight. [Read more about it...](#drawback_1)
-	* Another example is the *cs-bytes* field (bytes received from request) from the W3C Extended format. It's a good example for data which a webserver can easily come by but which just can't be retrieved by PHP ($_SERVER['CONTENT_LENGTH'] is not set if the request came in via GET method).
-* Reliable data for some of the fields is hard to come by
-	* For example take the "content-length" field from both the "Common" and "Combined" format. It's supposed to contain the size of the object returned to the client in bytes and trypically goes into the HTTP response header. Problem is: It is unclear how big the output of your script really is until it terminates.  [Read more about it...](#drawback_2)
-	* A further example is the *time-taken* field of the W3C Extended format. The reasons why in this case you can only reach for an approximation is quite similar to the example above. A webserver is just in the better position to perform a more accurate measurment.
-
-<br/>
-
-#### But limitations aside...
 <a name="usage"></a>
 ## Let's use this thing! [(^)](#_top)
 
@@ -114,7 +103,7 @@ Include the logger and writer of your liking (and probably some helper classes, 
 
 	use phpWTL\phpWTL;
 	use phpWTL\CombinedLogger;
-	use phpWTL\CommonCombinedDRP;
+	use phpWTL\DRP;
 	use phpWTL\DataRetrievalPolicy;
 	use phpWTL\DataRetrievalPolicyHelper;
 	use phpWTL\LogWriter\FLW\FileLogWriter;
@@ -184,14 +173,14 @@ Get started by fetching a logger instance:
 
 	$logger= CombinedLogger::getInstance($myPolicies);
 
-If you want, you might provide the constructor with an array of policy objects. If you omit the parameter, logger defaults will be used. Currently for the Combined and Common loggers this is the "DRP_CC_CONTENT_LENGTH_RETRIEVAL" policy set to "DRP_CC_CLR_SCRIPT" measurement.
-Static class "CommonCombinedDRP" provides you with all neccessary constants. The "DataRetrievalPolicyHelper" class provides operations to deal with arrays of "DataRetrievalPolicy" objects. Here's an example for a custom policy setup:
+If you want, you might provide the constructor with an array of policy objects. If you omit the parameter, logger defaults will be used. Currently for the Combined, Common and Extended loggers this is the "DRP_CONTENT_LENGTH_RETRIEVAL" policy set to "DRP_CLR_SCRIPT" measurement.
+Static class "DRP" provides you with all neccessary constants. The "DataRetrievalPolicyHelper" class provides operations to deal with arrays of "DataRetrievalPolicy" objects. Here's an example for a custom policy setup:
 
 	$myPolicies= array(
 		new DataRetrievalPolicy(
 			array(
-				'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
-				'flag' => CommonCombinedDRP::DRP_CC_CLR_CUSTOM,
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_CUSTOM,
 				'parameter' => 'images/test.jpg'
 			)
 		)
@@ -199,21 +188,21 @@ Static class "CommonCombinedDRP" provides you with all neccessary constants. The
 
 Here's another example for one of several helper methods (obtain the parameter for a specific policy):
 
-	echo DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter($logger->getDataRetrievalPolicies(), CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);	
+	echo DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter($logger->getDataRetrievalPolicies(), DRP::DRP_CONTENT_LENGTH_RETRIEVAL);	
 	
 You might as well change policies after instantiation of the logger. Don't worry about the retriever for the policies will be passed through:
 
 	$logger->setRetrievalPolicies($myPolicies);	
 		
-<a name="drp_cc"></a>	
-#### The "DRP_CC_CONTENT_LENGTH_RETRIEVAL" policy (Common and Combined logger)
+<a name="drp_clr"></a>	
+#### The "DRP_CONTENT_LENGTH_RETRIEVAL" policy (Common, Combined and Extended logger)
 
-* **DRP_CC_CLR_SCRIPT**
+* **DRP_CLR_SCRIPT**
 Per default, the request target is the PHP script the "log" method is called from.
 This means the content-length of the response object given to the client is estimated by looking up the size of the actual PHP script file.
 This *might* come close to the real output produced by the script but also might differ big time (largely depending on your code).
 
-* **DRP_CC_CLR_BUFFER**
+* **DRP_CLR_BUFFER**
 If this flag is set, PHP output control (buffering) will be used to actually calculate the size of content produced by the script and sent back to the client.
 This might not be exactly the value a webserver would see and may be off by a couple bytes due to measurement/script-injection logistics but it comes pretty close to a real webserver log entry.
 The main drawback of this method is that now the whole output of the script will be buffered. While output buffering is active no output is sent from the script (other than headers). 
@@ -221,7 +210,7 @@ Instead the output is stored in an internal buffer until the "log" method is cal
 Most of all this means if possible you should instantiate your logger right at the beginning of your script (this will start the buffer) but call the "log" method not before the end of your script (which will terminate and send the buffer).
 Whatever output is produced before the instantiation and after calling "log" can and will not be measured.
 
-* **DRP_CC_CLR_CUSTOM**
+* **DRP_CLR_CUSTOM**
 You might provide the relative filename/path to another ressource (like an image) via this flag using "parameter". This affects the fields *"content_size"*, *"status_code"*, 
 the request URI part of *"request_line"* (common format) and the *"referrer"* field (combined format) as follows: 
 	* **"content_size"** will contain the file size of the given ressource (the new request target) or is empty if the ressource-file doesn't exist
@@ -842,7 +831,7 @@ Log entries can be aggregated using the *"LogBuffer"* wrapper class. Logging con
 		// amount of content objects (=log entries or log events) to be buffered 
 		// before flush() will be called automatically
 		// (set to LogBufferHelper::BUFFER_OFF to disable buffering,
-        //  set to LogBufferHelper::BUFFER_INFINITE to disable auto flush)
+		//  set to LogBufferHelper::BUFFER_INFINITE to disable auto flush)
 		'buffer_size' => 20;
 	);
 
@@ -1050,6 +1039,631 @@ A simple and (phpWTL) proprietary format to log application events, errors and e
 	
 <br/><br/>
 
+<a name="examples"></a>
+## Example listings on how to use the framework [(^)](#_top)
+
+All listings shown here can also be found in the *phpWTL/examples* project folder.
+
+**EXAMPLE 1a - Combined Logger and FileLogWriter (FLW)**
+
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+
+	require_once '../phpWTL.php';
+	require_once '../CombinedLogger.php';
+	require_once '../LogWriter/FLW/FileLogWriter.php';
+	require_once '../LogWriter/FLW/FileLogWriterHelper.php';
+
+
+	// custom policies example
+	$myPolicies= array(
+		new DataRetrievalPolicy(
+			array(
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_CUSTOM,
+				'parameter' => 'phpWTL_ex-01_Combined-and-FileLogWriter.php'
+			)
+		)
+	);
+
+	// instantiate a logger for "combined" format
+	$logger= CombinedLogger::getInstance($myPolicies);
+
+	// show your logger's format description (here: combined)
+	echo "<br/>combined format prefix: ";
+	echo $logger->getFormatDescriptor()->getformatPrefix();
+	echo "<br/>combined format field names: ";
+	print_r($logger->getFormatDescriptor()->getFieldNames());
+
+	// override field format example
+	$logger->getFormatDescriptor()->setFormatter("content_size", "%B");
+
+	// do the actual logging (data retrieval, validation and formatting)
+	$logger->log();
+
+	// you can individually change fields content after logging
+	// (but then you might have to apply validator or formatter yourself afterwards if needed)
+	$myval= "hello world!";
+	if ($logger->getDataValidator()->isValid("user_id", $myval)) {
+		$logger->getDataRetriever()->setFieldContent("user_id", $myval);
+		$logger->getDataFormatter()->formatAllField("user_id");
+	}
+
+	// instantiate a file log writer
+	$writer= new FileLogWriter();
+
+	// a writer will log their internal error, warnings and state into corr. variables:
+	// "error" array, "warning" array and "state" string
+	echo "<br/><br/>";
+	echo "file log writer ERRORS: ";
+	print_r($writer->error);
+	echo "<br/><br/>";
+	echo "file log writer WARNINGS: ";
+	print_r($writer->warning);
+	echo "<br/><br/>";
+	echo "file log writer state: ";
+	echo $writer->state;
+
+	// get logger content object
+	$content_obj= $logger->getLoggerContent();
+
+	// encoding example
+	$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
+
+	// show what will be written...
+	echo "<br/><br/>content __toString(): ".$content_obj;
+
+	// if everything is ready, pass the content on to your writer.
+	$writer->writeToLog($content_obj);
+
+<br/>
+**EXAMPLE 1b - Combined Logger and DatabaseLogWriter (DBLW)**
+
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\DBLW\DatabaseLogWriter;
+	use phpWTL\LogWriter\DBLW\DatabaseLogWriterHelper;
+	use phpWTL\FormatDescriptorHelper;
+
+	require_once '../phpWTL.php';
+	require_once '../CombinedLogger.php';
+	require_once '../LogWriter/DBLW/DatabaseLogWriter.php';
+	require_once '../LogWriter/DBLW/DatabaseLogWriterHelper.php';
+	require_once '../FormatDescriptorHelper.php';
+
+
+	// custom policies example
+	$myPolicies= array(
+		new DataRetrievalPolicy(
+			array(
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_CUSTOM,
+				'parameter' => 'Smiley.svg.png'
+			)
+		)
+	);
+
+	// instantiate a logger for "combined" format
+	$logger= CombinedLogger::getInstance($myPolicies);
+
+	// show your logger's format description (here: combined)
+	echo "<br/>combined format prefix: ";
+	echo $logger->getFormatDescriptor()->getformatPrefix();
+	echo "<br/>combined format field names: ";
+	print_r($logger->getFormatDescriptor()->getFieldNames());
+
+	// do the actual logging (disable formatter to prevent field delimiters in order to get the data type right!)
+	$logger->log(array("format" => false));
+
+	// individually change fields content after logging
+	$logger->getDataRetriever()->setFieldContent("user_id", "hello world!");
+
+	// define connection parameters for your database
+	$connectionParams= array(
+		'dbname' => 'test',
+		'user' => 'test',
+		'password' => 'test',
+		'host' => 'localhost',
+		'port' => 3306,
+		'charset' => 'utf8',
+		'driver' => 'mysqli',
+	);
+
+	// define parameters for database log writer
+	$writerParams = array(
+		'table' => $logger->getFormatDescriptor()->getformatPrefix()."test_table",
+		'safety' => DatabaseLogWriterHelper::SAFETY_NONE,
+		'safe_naming_strategy' => DatabaseLogWriterHelper::SAFE_NAMING_STRATEGY_DBAL_ESCAPING
+	);
+
+	// instantiate a database log writer
+	$writer= new DatabaseLogWriter($connectionParams, $writerParams);
+
+	// a writer will log their internal error, warnings and state into corr. variables:
+	// "error" array, "warning" array and "state" string
+	echo "<br/><br/>";
+	echo "database log writer ERRORS: ";
+	print_r($writer->error);
+	echo "<br/><br/>";
+	echo "database log writer WARNINGS: ";
+	print_r($writer->warning);
+	echo "<br/><br/>";
+	echo "database log writer state: ";
+	echo $writer->state;
+
+	// get logger content object
+	$content_obj= $logger->getLoggerContent();
+
+	// encoding example
+	$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
+
+	// write data to database (raw datatypes)
+	$data= $content_obj->toArrayTyped();
+	$writer->writeToLog($data);
+
+	// show what has been written
+	echo "<br/><br/>toArray: "; print_r($data);
+
+<br/>
+**EXAMPLE 2a - Extended (W3C) Logger and FileLogWriterEx (FLWEx)**
+
+	use phpWTL\ExtendedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriterExt;
+
+	require_once '../ExtendedLogger.php';
+	require_once '../LogWriter/FLW/FileLogWriterExt.php';
+
+	// instantiate a w3c extended logger
+	$logger= ExtendedLogger::getInstance();
+
+	// show your logger's format description (here: w3c extended)
+	echo "<br/>w3c extended format prefix: ";
+	echo $logger->getFormatDescriptor()->getformatPrefix();
+	echo "<br/>w3c extended format field names: ";
+	print_r($logger->getFormatDescriptor()->getFieldNames());
+
+	// do the actual logging (data retrieval, validation and formatting)
+	$logger->log();
+
+	// instantiate a log writer
+	$writer= new FileLogWriterExt();
+
+	// define keys to be written and in which order:
+	// in this example we omit the "time" field and simply reverse the default field order
+	$keys_to_show= $logger->getFormatDescriptor()->getRegularFieldNames();
+	$key_to_delete= array_search("time", $keys_to_show);
+	if ($key_to_delete) unset($keys_to_show[$key_to_delete]);
+	$keys_to_show= array_reverse($keys_to_show);
+	$writer->writeToLogExt(
+		$logger->getLoggerContent()->toString($keys_to_show), 
+		// this needs to be done because of the "Fields" directive meta field, because we changed default keys and order
+		$logger->buildDirectivesForFileWriter($keys_to_show)
+	);
+
+	// show what has been written
+	echo "<br/><br/>content toArray: ";
+	print_r($logger->getLoggerContent()->toArray($keys_to_show));
+	echo "<br/><br/>content directives: ";
+	print_r($logger->buildDirectivesForFileWriter($keys_to_show));
+
+<br/>
+**EXAMPLE 2b - Extended (W3C) Logger and DatabaseLogWriter (DBLW)**
+
+	use phpWTL\ExtendedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\DBLW\DatabaseLogWriter;
+	use phpWTL\LogWriter\DBLW\DatabaseLogWriterHelper;
+	use phpWTL\FormatDescriptorHelper;
+
+	require_once '../ExtendedLogger.php';
+	require_once '../LogWriter/DBLW/DatabaseLogWriter.php';
+	require_once '../LogWriter/DBLW/DatabaseLogWriterHelper.php';
+	require_once '../FormatDescriptorHelper.php';
+
+	// instantiate a w3c extended logger
+	$logger= ExtendedLogger::getInstance();
+
+	// show your logger's format description (here: w3c extended)
+	echo "<br/>w3c extended format prefix: ";
+	echo $logger->getFormatDescriptor()->getformatPrefix();
+	echo "<br/>w3c extended format version: ";
+	echo $logger->getFormatDescriptor()->getformatVersion();
+	echo "<br/>w3c extended format field names: ";
+	print_r($logger->getFormatDescriptor()->getFieldNames());
+
+	// do the actual logging (data retrieval, validation and formatting)
+	$logger->log();
+
+	// define connection parameters for your database
+	$connectionParams = array(
+		'dbname' => 'test',
+		'user' => 'test',
+		'password' => 'test',
+		'host' => 'localhost',
+		'port' => 3306,
+		'charset' => 'utf8',
+		'driver' => 'mysqli',
+	);
+
+	// define parameters database log writer
+	$writerParams = array(
+		'table' => $logger->getFormatDescriptor()->getformatPrefix()."test_table",
+		'safety' => DatabaseLogWriterHelper::SAFETY_NONE,
+		'safe_naming_strategy' => DatabaseLogWriterHelper::SAFE_NAMING_STRATEGY_DBAL_ESCAPING
+	);
+
+	// instantiate a database log writer
+	$writer= new DatabaseLogWriter($connectionParams, $writerParams);
+
+	// define keys to be written and in which order:
+	// in this example we omit the "cs-username" field
+	$keys_to_show= $logger->getFormatDescriptor()->getRegularFieldNames();
+	$key_to_delete= array_search("cs-username", $keys_to_show);
+	if ($key_to_delete) unset($keys_to_show[$key_to_delete]);
+
+	// Update Extended format's "fields" directive
+	$logger->setDirectives($keys_to_show);
+
+	// don't update Extended format's "start-date" directive
+	$meta= $writer->fetchMetaDataFromDB();
+	if ($meta) $logger->getDataRetriever()->setFieldContent("dir_start-date", $meta["dir_start-date"]);
+
+	// get logger content object
+	$content_obj= $logger->getLoggerContent();
+
+	// write data to database
+	$regularData= $content_obj->toArrayTyped($keys_to_show);
+	$metaData= $content_obj->toArrayTypedMeta();
+	$writer->writeToLog($regularData, $metaData);
+
+	// show what has been written
+	echo "<br/><br/>toArray: "; print_r($regularData);
+	echo "<br/><br/>metaToArray: "; print_r($metaData);
+
+<br/>
+**EXAMPLE 3a - PHP application Logger and FileLogWriter (FLW)**
+
+	use phpWTL\PhpAppLogger;
+	use phpWTL\PhpAppLoggerHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+
+	require_once '../PhpAppLogger.php';
+	require_once '../PhpAppLoggerHelper.php';
+	require_once '../LogWriter/FLW/FileLogWriter.php';
+	require_once '../LogWriter/FLW/FileLogWriterHelper.php';
+
+	// instatiate an application logger, log-level threshold set to "WARNINGS"
+	$logger= PhpAppLogger::getInstance(PhpAppLoggerHelper::LOGLEVEL_WARNING);
+
+	// instantiate a file log writer
+	$writer= new FileLogWriter();
+
+	// a writer will log their internal error, warnings and state into corr. variables:
+	// "error" array, "warning" array and "state" string
+	echo "<br/><br/>";
+	echo "file log writer ERRORS: ";
+	print_r($writer->error);
+	echo "<br/><br/>";
+	echo "file log writer WARNINGS: ";
+	print_r($writer->warning);
+	echo "<br/><br/>";
+	echo "file log writer state: ";
+	echo $writer->state;
+
+	// define contents and parameters for a log-entry
+	$params= array(
+		"loglevel" => PhpAppLoggerHelper::LOGLEVEL_ERROR,
+		"message" => "Hello world! This logger has a {format_prefix} format prefix. This is call {count}.",
+		"context" => array(
+			"exception" => new RuntimeException('Hey dude, things went south BIG time!'),
+			"format_prefix" => $logger->getFormatDescriptor()->getFormatPrefix(),
+			"count" => 1,
+			"data" => array("one" => 1, "two" => array("hello" => "2_1", "world" => "2_2"), "three" => 3),
+			"data_2" => array("eins", "zwo", "drei"),
+			"ex" => new Exception("DEBUG!!!"),
+			"arr" => array("hallo" => "welt", "version" => $logger->getFormatDescriptor()->getFormatVersion())
+		),
+		"exclude_placeholders_from_context" => true
+	);
+
+	// actual logging
+	$fail= $logger->log($params);
+
+	if (!$fail) {
+		// get logger content object
+		$content_obj= $logger->getLoggerContent();
+
+		// show what will be written...
+		echo "<br/><br/>content __toString(): ".$content_obj;
+
+		// if everything is ready, pass the content on to your writer.
+		$writer->writeToLog($content_obj);
+	} else print_r($fail);
+
+<br/>
+**EXAMPLE 3b - PHP application Logger and FileLogWriter (FLW) and LogBuffer**
+
+	use phpWTL\PhpAppLogger;
+	use phpWTL\PhpAppLoggerHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+	use phpWTL\LogBuffer;
+	use phpWTL\LogBufferHelper;
+
+	require_once '../PhpAppLogger.php';
+	require_once '../PhpAppLoggerHelper.php';
+	require_once '../LogWriter/FLW/FileLogWriter.php';
+	require_once '../LogWriter/FLW/FileLogWriterHelper.php';
+	require_once '../LogBuffer.php';
+	require_once '../LogBufferHelper.php';
+
+	// instatiate an application logger, log-level threshold set to "WARNINGS"
+	$logger= PhpAppLogger::getInstance(PhpAppLoggerHelper::LOGLEVEL_WARNING);
+
+	// instantiate a file log writer
+	$writer= new FileLogWriter();
+
+	// a writer will log their internal error, warnings and state into corr. variables:
+	// "error" array, "warning" array and "state" string
+	echo "<br/><br/>";
+	echo "file log writer ERRORS: ";
+	print_r($writer->error);
+	echo "<br/><br/>";
+	echo "file log writer WARNINGS: ";
+	print_r($writer->warning);
+	echo "<br/><br/>";
+	echo "file log writer state: ";
+	echo $writer->state;
+
+	// establish a log buffer
+	// define how to use and feed the writer (i.e. store a single log entry) during the buffer flush loop
+	function mySimpleFlush($writer_object, $content_object) {
+		$writer_object->writeToLog($content_object);
+	}
+	$myCallbacks= array (
+		LogBufferHelper::CALLBACK_FLUSH_EACH => "mySimpleFlush"
+	);
+
+	// define buffer parameter
+	$myBufferParams= array (
+		"buffer_size" => 4
+	);
+
+	// instatiate the log buffer
+	$logbuffer= new LogBuffer($logger, $writer, $myCallbacks, $myBufferParams);
+
+	// define contents and parameters for a log-entry
+	$params= array(
+		"loglevel" => PhpAppLoggerHelper::LOGLEVEL_ERROR,
+		"message" => "Hello world! This logger has a {format_prefix} format prefix. This is call {count}.",
+		"context" => array(
+			"exception" => new RuntimeException('Hey dude, things went south BIG time!'),
+			"format_prefix" => $logger->getFormatDescriptor()->getFormatPrefix(),
+			"nested_data" => array("one" => 1, "two" => array("hello" => "2_1", "world" => "2_2"), "three" => 3),
+			"other_data" => array("eins", "zwo", "drei"),
+			"ex" => new Exception("DEBUG!!!"),
+			"arr" => array("hallo" => "welt", "version" => $logger->getFormatDescriptor()->getFormatVersion())
+		),
+		"exclude_placeholders_from_context" => true
+	);
+
+	// actual logging (a couple times for the demo)
+	for ($i=1; $i<4; $i++) {
+		// a little variation for demo purposes
+		if ($i>1) {
+			$params["context"]= array();
+			$params["message"]= "This is call {count}.";
+		}
+		$params["context"]["count"]= $i;
+		$logbuffer->log($params);
+
+		// sleep a random amount of seconds
+		sleep(rand(1, 3));
+		
+		// just for demonstration/debugging purposes
+		if ($logger->getLoggerContent()) {
+			// get logger content object
+			$content_obj= $logger->getLoggerContent();
+
+			// show what will be written...
+			echo "<br/><br/>content __toString(): ".$content_obj;
+		}
+	}
+
+	// exception logging example
+	function inverse($x) {
+		if (!$x) {
+		   throw new Exception('Division by zero.');
+		}
+		return 1/$x;
+	}
+
+	try {
+		echo "division by zero: ".inverse(0);
+	} catch (Exception $e) {
+		$logbuffer->log(array("loglevel" => PhpAppLoggerHelper::LOGLEVEL_CRITICAL, "message" => "Uh oh!", "context" => array("exception" => $e)));
+
+		// just for demonstration/debugging purposes
+		if ($logger->getLoggerContent()) {
+			// get logger content object
+			$content_obj= $logger->getLoggerContent();
+
+			// show what will be written...
+			echo "<br/><br/>content __toString(): ".$content_obj;
+		}
+	}
+ 
+
+<br/><br/>
+
+<a name="goodies"></a>
+## Tools & Goodies [(^)](#_top)
+
+**S.A.L.T. - [S]tatic [A]sset [L]ogging [T]ool**
+
+**The good...**
+
+This little tool can help you with the task of manually logging assets like images, stylesheets or client-side script files in proper sequence. When a page contains tags with references to external static assets, they will be subsequently requested by the browser AFTER the referencing page has been logged and delivered. Normally those tags appear quite early in a page and if logged by phpWTL in the usual way (in the sequence they appear in the source) they would show up "out-of-sequence" in a logfile, at least if buffered logging is used. Even without buffered logging you would need to keep track of sequence, which is annoying.
+To address this sequencing dilemma, the little SALT tool can assist you. Because it internally uses the LogBuffer class, it will always collect all entries until you tell it to flush them to a log writer in the end. So the proper sequence is always taken care of.
+
+**...and the bad and the ugly**
+
+To be honest, there's a problem: This procedure is invasive. It lies in the nature of things. If you just log page hits, you can keep it simple, including just two commands per page, one right at the start to include a code-snippet to initialize your logger and one at the end, actually invoking the logger. If you want to log static assets, you need to exchange ALL occurences of respective tags like IMG, LINK or SCRIPT with a SALT wrapper command. Well, it tries to be as helpful as possible and will generate the appropriate tag, write it to the output and feed an entry to the LogBuffer. So the command itself is simple and convenient. But you need to change your codebase (probably a lot), which is unfortunately highly invasive. In this sense SALT can be a clean and feasible solution for smaller projects only.
+
+**SALT - a brief example**
+
+	// ... (initialize logger and writer)
+    $salt= new SALT($logger, $writer);
+	logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg");
+    logAssetType(SALTHelper::SALT_RES_CSS, "styles/myStyle.css");
+    logAssetType(SALTHelper::SALT_RES_JS, "script/myScript.js");
+    logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg", array(
+      'alt' => 'hallo Welt!',
+      'width' => '640px',
+      'height' => '480px'
+	));
+    logAssetCustom("tagname", "res/myRes.whatever", array(
+      'source' => '*',
+      'xyz' => 'test123'
+	));
+	$salt->finalize();
+    // ... (log actual page hit)
+
+<br/>
+
+**P.E.P.R. - [P]phWTL [E]xternal [P]lunder [R]aider**
+
+This is a little tool for the automated logging of static assets included in a page, in proper (webserver like) sequence. PEPR will try and parse the static HTML output of your PHP script to identify all static assets in it automatically. So in contrast to the SALT tool, this procedure is non-invasive and tags, embedding static assets into the source, don't need to be changed. Unlike SALT, this tool needs PHP output buffering to work. 
+
+**SALT or PEPPER, what's it to be?**
+
+It's a matter of personal taste and of course your individual code-base. 
+
+**SALT** is more invasive than PEPR, because you need to exchange all occurences of tags like IMG or SCRIPT with a SALT command. This is not feasible for larger projects. But unlike PEPR it works without PHP output buffering, so if you have a problem with that, it's the tool of your choice. Also SALT is flexible and offers fully customizable tags.
+
+**PEPR** on the other hand won't work without PHP output buffering but is non-invasive because it scans the HTML output of your PHP script for tags like IMG or SCRIPT on its own. There's only little additional code neccessary to get this tool to work in your project. And mappings for tag-names to attributes, adressing resources, are fully customizable. But PEPR demands slightly higher standards of your PHP installation/configuration (it needs DOM support, which normally shouldn't be any problem since PHP5).
+
+**PEPR - a real-world example:**
+
+Initialize your logging process, e.g. included as: require_once('include/logger_init.php'); at the beginning of a page:
+
+	<?php
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+	use phpWTL\Tools\PEPR;
+	use phpWTL\Tools\PEPRHelper;
+	use phpWTL\LogBufferHelper;
+
+	define('PATH_TO_PHPWTL', '../phpWTL/');
+	require_once PATH_TO_PHPWTL.'phpWTL.php';
+	require_once PATH_TO_PHPWTL.'CombinedLogger.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriter.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriterHelper.php';
+	require_once PATH_TO_PHPWTL.'Tools/PEPR.php';
+	require_once PATH_TO_PHPWTL.'Tools/PEPRHelper.php';
+	require_once PATH_TO_PHPWTL.'LogBufferHelper.php';
+
+	// callback function for PEPR flush loop to set encoding for the logger content
+	// (if nothing special is needed, PEPR might be instantiated without callbacks, a simple callback is provided internally as a default)
+	function peprFlush($writer_object, $content_object) {
+		$content_object->setEncoding(phpWTL::SYSTEM_ENCODING);
+		$writer_object->writeToLog($content_object);
+	}
+		
+	// set retrieval policy to enable PHP output buffering (needed for the PEPR tool)
+	$pol= array(
+		new DataRetrievalPolicy(
+			array(
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_BUFFER
+			)
+		)
+	);
+
+	// instantiate a logger for "combined" format
+	$logger= CombinedLogger::getInstance($pol);
+
+	// instantiate a file log writer
+	$writer= new FileLogWriter();
+
+	// define resource types (tag and attribute mappings) for PEPR
+	// Custom tags and/or multiple attribute definitions for resource are also possible.
+	// Resource attributes will be checked in the given sequence. 
+	// If a resource attribute is not found or contains an empty string, the next alternative will be evaluated.
+	// So it is possible to have different (custom) versions of the same tag (with different attribute signatures).
+	$restypes= array(
+		'img' => array ('resource' => array('src')),
+		'link' => array ('resource' => array('href')),
+		'script' => array ('resource' => array('src')),
+		'custom' => array ('resource' => array('src', 'alternative_attrib_for_src'))
+	);
+
+	// instantiate PEPR tool
+	$pepr= new PEPR($logger, $writer, $restypes, false, array (
+		LogBufferHelper::CALLBACK_FLUSH_EACH => "peprFlush"
+	));
+	// alternative to instantiate PEPR tool with resource type definitions from an .ini file
+	$pepr= new PEPR($logger, $writer, PEPRHelper::getDatatypeMappingsFromIni("/my/stuff/my.ini"), false, array (
+		LogBufferHelper::CALLBACK_FLUSH_EACH => "peprFlush"
+	));
+	// alternative: if nothing special is needed, PEPR might be instantiated without any callbacks, 
+	// a simple callback is provided internally as a default
+	$pepr= new PEPR($logger, $writer, $restypes);
+	?>
+
+Perform the actual logging, e.g. included as: require_once('include/logger_log.php'); at the very end of a page:
+
+	<?php
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+
+	// get static HTML generated from PHP output buffering for PEPR tool
+	$html= $logger->getBuffer();
+
+	// do the actual logging (data retrieval, validation and formatting) for this page
+	$logger->log();
+
+	// do stuff to the logger content, here: set encoding
+	$content_obj= $logger->getLoggerContent();
+	$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
+
+	// write log entry for the current page hit
+	$writer->writeToLog($content_obj);
+
+	// finally let PEPR write log entries for all references to static assets found in the static HTML generated from PHP output buffering
+	$pepr->logAssets($html);
+
+	// PEPR was instantiated with disabled manual finalization (=automatic finalization), so this is commented-out
+	// if set to manual finalization, the actual logging process is done only after the finalize method is called
+	//$pepr->finalize();
+	?>
+
+<br/>
+
 <a name="contributing"></a>
 ## Contributing to this project [(^)](#_top)
 
@@ -1070,13 +1684,20 @@ Licensed under the Apache License, version 2.0.
 
 <br/>
 
-## And now for all the lengthy stuff which sort of was getting in the way in all the sections above... [(^)](#_top)
-<a name="drawback_1"></a>
-[(^)](#drawbacks)
-**Logging of collateral files**
-The problem applies to all sorts of static assets your PHP script/application is not directly involved in their loading, like images, stylesheets or JavaScript files. Unless you actively take care they somehow will be included in the logging process they simply won't show up in your logs. phpWhatTheLog has means and capabilities to assist you with this task (by defining so-called "data retrieval policies" and by altering single log fields in retrospect). But you have to put some extra effort into this, it won't work out-of-the-box just by including and invoking the logger. In a later section of this manual I'll discuss strategies how to e.g. log image files.	
+<a name="drawbacks"></a>
+### Common drawbacks of logging by script - and how to deal with them (maybe) [(^)](#_top)
 
-<a name="drawback_2"></a>
-[(^)](#drawbacks)
-**Logging "content-length"**
+* Real sequence and real latency times
+	* **LATENCY:** In general, measuring real latency times without real webserver logging is next to impossible. Just imagine references to static assets in a page (to images, stylesheets or script files): The usual chain is a couple of independent request-response-pairs, where first the page itself is delivered to the browser after it was logged by the webserver. Then some times passes between the point where the browser receives the page, parses it, encounters for examle a *LINK* tag, sends a follow-up request to get the respective CSS file from the webserver and finally the webserver receives the new request and logs this one as a new hit. So it becomes clear, a PHP script - and we're talking application server here - will never be able to measure those latency times. Subsequent requests from the browser to static assets won't be addressed to the PHP engine but to the webserver alone.
+	* **SEQUENCE:** Logging the proper sequence is possible, but takes some special care (see SALT and PEPR tools in the [GOODIES](#goodies) section). This is because a real webserver sees and logs requests to static assets only in subsequent requests AFTER the actual page request has been logged and the page has been delivered. A PHP script sees those references to static assets in the code at once - as they come - and many of them quite early (like LINK or SCRIPT tags). Logging those before the page itself is logged would be wrong. But without tool support and PHP output buffering enabled this situation could easily happen.
+* You can't expect to log everything (and you can't expect some of the things you actually *can* log to be logged easy-peasy)
+	* To log a hit to the script you include the logger functionality is pretty straight-forward. Logging access to collateral (static) files is not *that* straight.<br/><br/>
+**Logging of collateral files**<br/>
+The problem applies to all sorts of static assets your PHP script/application is not directly involved in their loading, like images, stylesheets or JavaScript files. Unless you actively take care they somehow will be included in the logging process they simply won't show up in your logs. phpWhatTheLog has means and capabilities to assist you with this task (by defining so-called "data retrieval policies" and by altering single log fields in retrospect). But you have to put some extra effort into this, it won't work out-of-the-box just by including and invoking the logger. In a later section of this manual I'll discuss strategies how to e.g. log image files.	* Another example is the *cs-bytes* field (bytes received from request) from the W3C Extended format. It's a good example for data which a webserver can easily come by but which just can't be retrieved by PHP ($_SERVER['CONTENT_LENGTH'] is not set if the request came in via GET method).
+* Reliable data for some of the fields is hard to come by
+	* For example take the "content-length" field from both the "Common" and "Combined" format. It's supposed to contain the size of the object returned to the client in bytes and trypically goes into the HTTP response header. Problem is: It is unclear how big the output of your script really is until it terminates.<br/><br/>
+    **Logging "content-length"**<br/>
 For a webserver this value is easy to retrieve, the output is sent to it *afterwards* so it is in the best position to actually *see* the size. But all we can do within the limited world of our little PHP script is a) to try and estimate or b) really measure. phpWhatTheLog does the former by default: It just looks how big the filesize of the PHP script is, you include the logger. This *might* come close to the real output produced by the script but also might differ big time (largely depending on your code). But you can choose to configure the latter method: Actually *measure* the size of your script's output. When this is set, PHP output control (buffering) will be used to actually calculate the size of content produced by the script and sent back to the client. This might not be exactly the value a webserver would see and may be off by a couple bytes due to measurement/script-injection logistics but it comes pretty close to a real webserver log entry. The main drawback of this method is that now the whole output of the script will be buffered. While output buffering is active no output is sent from the script (other than headers), instead the output is stored in an internal buffer until the "log" method is called (at this point content-length will be measured and the whole buffer will be sent "en bloc"). Most of all this means if possible you should instantiate your logger right at the beginning of your script (this will start the buffer) but call the "log" method not before the end of your script (which will terminate and send the buffer). Whatever output is produced before the instantiation and after calling "log" will not be measured.
+
+	* A further example is the *time-taken* field of the W3C Extended format. The reasons why in this case you can only reach for an approximation is quite similar to the example above. A webserver is just in the better position to perform a more accurate measurment.
+

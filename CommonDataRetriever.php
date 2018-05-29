@@ -8,7 +8,7 @@ require_once 'aBasicDataRetriever.php';
   * Data retriever for the common log format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.2
+  * @version v0.2.3
   * @api
   */
 class CommonDataRetriever extends aBasicDataRetriever {
@@ -56,9 +56,9 @@ class CommonDataRetriever extends aBasicDataRetriever {
 						$value= FormatDescriptorHelper::timestamp2datetimeString($_SERVER['REQUEST_TIME']);
 					break;
 					case "request_line":
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
-							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
+							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
 							$value= $_SERVER['REQUEST_METHOD']." ".$basepath.$requestTarget." ".$_SERVER['SERVER_PROTOCOL'];
@@ -71,9 +71,9 @@ class CommonDataRetriever extends aBasicDataRetriever {
 					break;
 					case "content_size":
 						$value= "0";						
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
-							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
+							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
@@ -81,9 +81,9 @@ class CommonDataRetriever extends aBasicDataRetriever {
 							} else {
 								static::$loggerContent->__set("status_code", "404");
 							}						
-						} elseif (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-								  DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_BUFFER) {
-							$value= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL);
+						} elseif (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+								  DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
+							$value= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 						} else {				
 							$value= filesize($_SERVER['SCRIPT_FILENAME']);
 						}

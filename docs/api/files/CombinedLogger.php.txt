@@ -25,7 +25,7 @@ class CombinedLogger extends CommonLogger {
 
 	/**
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  */
 	protected function __construct($retrievalPolicies= null) {		
 		static::setDataRetrievalPolicies($retrievalPolicies);
@@ -33,8 +33,8 @@ class CombinedLogger extends CommonLogger {
 		static::$dataRetriever= CombinedDataRetriever::getInstance(array(static::$loggerContent, static::$retrievalPolicies));
 		static::$dataValidator= GenericDataValidator::getInstance(static::$loggerContent);
 		static::$dataFormatter= CombinedDataFormatter::getInstance(static::$loggerContent);
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::initializeBuffering();
 		}
 	}

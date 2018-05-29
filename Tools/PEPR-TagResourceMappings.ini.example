@@ -1,0 +1,26 @@
+;
+; phpWhatTheLog
+; 	PEPR example default tag resource mappings configuration
+;
+; Contains mappings to map tag names to attribute names for loading an external resource
+;
+
+[img]
+	resource[]= 'src'
+[link]
+	resource[]= 'href'
+[script]
+	resource[]= 'src'
+[embed]
+	resource[]= 'src'
+[iframe]
+	resource[]= 'src'
+
+; Custom tags and/or multiple attribute definitions for resource are also possible.
+; Resource attributes will be checked in the given sequence. 
+; If a resource attribute is not found or contains an empty string, the next alternative will be evaluated.
+; So it is possible to have different (custom) versions of the same tag (with different attribute signatures).
+; [custom_tag]
+; 	resource[]= 'src'
+; 	resource[]= 'alternative'
+;   ...

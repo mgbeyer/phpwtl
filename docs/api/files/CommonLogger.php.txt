@@ -2,7 +2,7 @@
 namespace phpWTL;
 use phpWTL\DataRetrievalPolicy;
 use phpWTL\DataRetrievalPolicyHelper;
-use phpWTL\CommonCombinedDRP;
+use phpWTL\DRP;
 use phpWTL\aBasicLogger;
 use phpWTL\CommonFormatDescriptor;
 use phpWTL\LoggerContent;
@@ -12,7 +12,7 @@ use phpWTL\CommonDataFormatter;
 
 require_once 'DataRetrievalPolicy.php';
 require_once 'DataRetrievalPolicyHelper.php';
-require_once 'CommonCombinedDRP.php';
+require_once 'DRP.php';
 require_once 'aBasicLogger.php';
 require_once 'CommonFormatDescriptor.php';
 require_once 'LoggerContent.php';
@@ -24,7 +24,7 @@ require_once 'CommonDataFormatter.php';
   * Logger for the NCSA common log format (see: https://en.wikipedia.org/wiki/Common_Log_Format). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.3.2
+  * @version v0.3.3
   * @api
   */
 class CommonLogger extends aBasicLogger {
@@ -48,8 +48,8 @@ class CommonLogger extends aBasicLogger {
 		static::$dataRetriever= CommonDataRetriever::getInstance(array(static::$loggerContent, static::$retrievalPolicies));
 		static::$dataValidator= GenericDataValidator::getInstance(static::$loggerContent);
 		static::$dataFormatter= CommonDataFormatter::getInstance(static::$loggerContent);
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::initializeBuffering();
 		}
 	}
@@ -58,10 +58,10 @@ class CommonLogger extends aBasicLogger {
 	  * Buffer initialization for ContentLengthRetrieval policy.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  */
 	protected function initializeBuffering() {
-		ob_end_clean();
+		if (count(ob_get_status())>0) ob_end_clean();
 		ob_start();
 	}
 	
@@ -75,9 +75,28 @@ class CommonLogger extends aBasicLogger {
 		$ob_size= ob_get_length();
 		ob_end_flush();
 		if (static::$dataRetriever) {
-			DataRetrievalPolicyHelper::setDataRetrievalPolicyParameter(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, $ob_size);
+			DataRetrievalPolicyHelper::setDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL, $ob_size);
 			static::$dataRetriever->setDataRetrievalPolicies(static::$retrievalPolicies);
 		}
+	}
+
+	/**
+	  * Return PHP output buffer.
+	  *
+	  * @return string buffer content (null if logging mode is not buffered)
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	public function getBuffer() {
+		$ret= null;
+
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
+			$ret= ob_get_contents();
+		}		
+		return $ret;
 	}
 
 	/**
@@ -91,8 +110,8 @@ class CommonLogger extends aBasicLogger {
 	protected function loadDataRetrievalPoliciesDefault() {
 		static::$retrievalPolicies= array(
 			new DataRetrievalPolicy(array(
-				'name' => CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL, 
-				'flag' => CommonCombinedDRP::DRP_CC_CLR_SCRIPT
+				'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+				'flag' => DRP::DRP_CLR_SCRIPT
 			)),
 		);
 	}
@@ -104,8 +123,8 @@ class CommonLogger extends aBasicLogger {
 			static::loadDataRetrievalPoliciesDefault();
 		}
 		if (static::$dataRetriever) static::$dataRetriever->setDataRetrievalPolicies(static::$retrievalPolicies);
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::initializeBuffering();
 		}
 	}
@@ -139,8 +158,8 @@ class CommonLogger extends aBasicLogger {
 			}
 		}
 		
-		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_BUFFER) {
+		if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+			DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_BUFFER) {
 			static::finalizeBuffering();
 		}
 		if (static::$dataRetriever) static::$dataRetriever->retrieve();

@@ -113,10 +113,24 @@
 		<h3>
 		What's new?	&nbsp;<small><a href="#">(^)</a></small>
 		</h3>
-		This is a whole new project... so at the present time EVERYTHING is new :-)
+		<h4>2018-0526</h4> 
+		<h4>S.A.L.T. - [S]tatic [A]sset [L]ogging [T]ool</h4> 
+		This little tool can help you with the task of manually logging assets like images, stylesheets or client-side script files in proper sequence. Because it internally uses the LogBuffer class, it will always collect all entries until you tell it to flush them to a log writer in the end. So the proper sequence is always taken care of, no matter how you handle the logging process otherwise (e.g. PHP output buffering).
+		<br/>
+		For more information, <a href="https://github.com/mgbeyer/phpwtl">check out the GitHub pages</a>.
 		<br/><br/>
-		As this project evolves, it is planned to provide future news here, related to changes, enhancements and notable bugfixes...
-	  </section>
+		<h4>P.E.P.R. - [P]phWTL [E]xternal [P]lunder [R]aider</h4> 
+		This is a little tool for the automated logging of static assets included in a page, in proper (webserver like) sequence. PEPR will try and parse the static HTML output of your PHP script to identify all static assets in it automatically. So in contrast to the SALT tool, this procedure is non-invasive and tags, embedding static assets into the source, don't need to be changed. Unlike SALT, this tool needs PHP output buffering to work. 
+		<br/>
+		For more information, <a href="https://github.com/mgbeyer/phpwtl">check out the GitHub pages</a>.
+		<br/><br/>
+		<h4>S.A.L.T. or P.E.P.R. - Which one to use?</h4> 
+		It's a matter of personal taste and of course your individual code-base. 
+		<br/>
+		SALT is more invasive than PEPR, because you need to exchange all occurences of tags like IMG or SCRIPT with a SALT command. This is not feasible for larger projects. But unlike PEPR it works without PHP output buffering, so if you have a problem with that, it's the tool of your choice. Also SALT is flexible and offers fully customizable tags.
+		<br/>
+		PEPR on the other hand won't work without PHP output buffering but is non-invasive because it scans the HTML output of your PHP script for tags like IMG or SCRIPT on its own. There's only little additional code neccessary to get this tool to work in your project. And mappings for tag-names to attributes, adressing resources, are fully customizable. But PEPR demands slightly higher standards of your PHP installation/configuration (it needs DOM support, which normally shouldn't be any problem since PHP5).
+		</section>
 
 	  <section>
 		<a id="showcase" class="anchor" href="#showcase" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>

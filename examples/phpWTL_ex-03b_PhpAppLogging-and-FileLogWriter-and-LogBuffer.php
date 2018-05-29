@@ -2,7 +2,7 @@
 /**
   * phpWTL example 3b
   *
-  * PHP application Logger and FileLogWriter (FLW) and buffered logging.
+  * PHP application Logger and FileLogWriter (FLW) and LogBuffer.
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
   * @version v0.1.0

@@ -7,7 +7,7 @@ use Doctrine\Common\ClassLoader;
 
 define('DBAL_BASE_PATH', __DIR__.'/../../'.phpWTL::DBAL_FOLDER_NAME.'/');
 
-require '/../iBasicLogWriter.php';
+require __DIR__ .'/../iBasicLogWriter.php';
 require 'DatabaseLogWriterHelper.php';
 require DBAL_BASE_PATH.'lib/Doctrine/Common/ClassLoader.php';
 
@@ -15,16 +15,16 @@ require DBAL_BASE_PATH.'lib/Doctrine/Common/ClassLoader.php';
   * Database log writer (DBLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.4
+  * @version v0.2.6
   * @api
   */
 class DatabaseLogWriter implements iBasicLogWriter {
 	/** Prefix for ini files. */
 	const WRITER_PREFIX= "DBLW";
 	/** default name for connection parameter ini file. */
-	const CONN_PARAM_DEFAULT_INI= self::WRITER_PREFIX."-ConnParam.ini";
+	const CONN_PARAM_DEFAULT_INI= "../../config/DBLW-ConnParam.ini";
 	/** default name for datatype mappings ini file. */
-	const DATATYPE_MAPPINGS_DEFAULT_INI= self::WRITER_PREFIX."-DatatypeMappings.ini";
+	const DATATYPE_MAPPINGS_DEFAULT_INI= "../../config/DBLW-DatatypeMappings.ini";
 	/** Meta table suffix. */
 	const META_SUFFIX= "_meta";
 

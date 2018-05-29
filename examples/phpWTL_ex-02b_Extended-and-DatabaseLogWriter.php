@@ -5,11 +5,11 @@
   * Extended (W3C) Logger and DatabaseLogWriter (DBLW).
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.0
+  * @version v0.1.1
   */
 
 use phpWTL\ExtendedLogger;
-use phpWTL\ExtendedDRP;
+use phpWTL\DRP;
 use phpWTL\DataRetrievalPolicy;
 use phpWTL\DataRetrievalPolicyHelper;
 use phpWTL\LogWriter\DBLW\DatabaseLogWriter;

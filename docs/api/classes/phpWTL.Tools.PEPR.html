@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/phpWTL.html">\phpWTL</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">245</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2114887074"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-2114887074" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-757265686"></a>
+                                <a href="../namespaces/phpWTL.html" style="margin-left: 30px; padding-left: 0">phpWTL</a>
+            </div>
+            <div id="namespace-757265686" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-933589739"></a>
+                                <a href="../namespaces/phpWTL.LogWriter.html" style="margin-left: 30px; padding-left: 0">LogWriter</a>
+            </div>
+            <div id="namespace-933589739" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-376370070"></a>
+                                <a href="../namespaces/phpWTL.LogWriter.DBLW.html" style="margin-left: 30px; padding-left: 0">DBLW</a>
+            </div>
+            <div id="namespace-376370070" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/phpWTL.LogWriter.DBLW.DatabaseLogWriter.html">DatabaseLogWriter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LogWriter.DBLW.DatabaseLogWriterHelper.html">DatabaseLogWriterHelper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1223502908"></a>
+                                <a href="../namespaces/phpWTL.LogWriter.FLW.html" style="margin-left: 30px; padding-left: 0">FLW</a>
+            </div>
+            <div id="namespace-1223502908" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/phpWTL.LogWriter.FLW.FileLogWriter.html">FileLogWriter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LogWriter.FLW.FileLogWriterExt.html">FileLogWriterExt</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LogWriter.FLW.FileLogWriterHelper.html">FileLogWriterHelper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                    <li class="interface"><a href="../classes/phpWTL.LogWriter.iBasicLogWriter.html">iBasicLogWriter</a></li>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1377913062"></a>
+                                <a href="../namespaces/phpWTL.Tools.html" style="margin-left: 30px; padding-left: 0">Tools</a>
+            </div>
+            <div id="namespace-1377913062" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/phpWTL.Tools.PEPR.html">PEPR</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.Tools.PEPRHelper.html">PEPRHelper</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.Tools.SALT.html">SALT</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.Tools.SALTHelper.html">SALTHelper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/phpWTL.aBasicDataFormatter.html">aBasicDataFormatter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.aBasicDataRetriever.html">aBasicDataRetriever</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.aBasicDataValidator.html">aBasicDataValidator</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.aBasicFormatDescriptor.html">aBasicFormatDescriptor</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.aBasicLogger.html">aBasicLogger</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.aSingleton.html">aSingleton</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CombinedDataFormatter.html">CombinedDataFormatter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CombinedDataRetriever.html">CombinedDataRetriever</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CombinedFormatDescriptor.html">CombinedFormatDescriptor</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CombinedLogger.html">CombinedLogger</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CommonDataFormatter.html">CommonDataFormatter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CommonDataRetriever.html">CommonDataRetriever</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CommonFormatDescriptor.html">CommonFormatDescriptor</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.CommonLogger.html">CommonLogger</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.DataRetrievalPolicy.html">DataRetrievalPolicy</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.DataRetrievalPolicyHelper.html">DataRetrievalPolicyHelper</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.DescriptorField.html">DescriptorField</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.DRP.html">DRP</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.ExtendedDataFormatter.html">ExtendedDataFormatter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.ExtendedDataRetriever.html">ExtendedDataRetriever</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.ExtendedFormatDescriptor.html">ExtendedFormatDescriptor</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.ExtendedLogger.html">ExtendedLogger</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.FormatDescriptorHelper.html">FormatDescriptorHelper</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.GenericDataValidator.html">GenericDataValidator</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LogBuffer.html">LogBuffer</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LogBufferHelper.html">LogBufferHelper</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.LoggerContent.html">LoggerContent</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.PhpAppDataFormatter.html">PhpAppDataFormatter</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.PhpAppDataRetriever.html">PhpAppDataRetriever</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.PhpAppFormatDescriptor.html">PhpAppFormatDescriptor</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.PhpAppLogger.html">PhpAppLogger</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.PhpAppLoggerHelper.html">PhpAppLoggerHelper</a></li>
+                                                    <li class="class"><a href="../classes/phpWTL.phpWTL.html">phpWTL</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/phpWTL.Tools.html">\phpWTL\Tools</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\phpWTL\Tools</small>PEPR</h1>
+                    <p><em>P.E.P.R. - [P]phWTL [E]xternal [P]lunder [R]aider
+Tool for automatic logging of static assets included in a page, in proper (webserver like) sequence
+(Needs the data retrieval policy &quot;DRP_CONTENT_LENGTH_RETRIEVAL&quot; set to &quot;DRP_CLR_BUFFER&quot; (enabled PHP output buffering) to work)</em></p>
+                    
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#method_logAssets" class="">logAssets()</a><br />
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#method_finalize" class="">finalize()</a><br />
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#method_getLogbuffer" class="">getLogbuffer()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#constant_TAG_RESOURCE_MAPPINGS_DEFAULT_INI" class="">TAG_RESOURCE_MAPPINGS_DEFAULT_INI</a><br />
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <em>No protected methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#property__logbuffer" class="">$_logbuffer</a><br />
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#property__resTypes" class="">$_resTypes</a><br />
+                                                                    <a href="../classes/phpWTL.Tools.PEPR.html#property__manualfinalize" class="">$_manualfinalize</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Tools.PEPR.html"><div class="path-wrapper">Tools\PEPR.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Default</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\phpWTL\Tools\PEPR</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Michael Beyer <a href="mailto:mgbeyer@gmx.de">mgbeyer@gmx.de</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    <p>v0.1.0</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                api
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                                    <a id="constants" name="constants"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Constants</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_TAG_RESOURCE_MAPPINGS_DEFAULT_INI" name="constant_TAG_RESOURCE_MAPPINGS_DEFAULT_INI" class="anchor"></a>
+            <article id="constant_TAG_RESOURCE_MAPPINGS_DEFAULT_INI" class="constant">
+                <h3 class="">TAG_RESOURCE_MAPPINGS_DEFAULT_INI</h3>
+                <pre class="signature">TAG_RESOURCE_MAPPINGS_DEFAULT_INI</pre>
+                <p><em>default name for tag resource mappings ini file.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__logbuffer" name="property__logbuffer" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_logbuffer</h3>
+                <pre class="signature">$_logbuffer : </pre>
+                <p><em>LogBuffer</em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__resTypes" name="property__resTypes" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_resTypes</h3>
+                <pre class="signature">$_resTypes : </pre>
+                <p><em>Resource types description</em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__manualfinalize" name="property__manualfinalize" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_manualfinalize</h3>
+                <pre class="signature">$_manualfinalize : </pre>
+                <p><em>manual finalization</em></p>
+                
+
+                                <h4>Type</h4>
+                
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(object  <span class="argument">$logger</span>, object  <span class="argument">$writer</span>, array  <span class="argument">$restypes</span>, boolean  <span class="argument">$manual_finalize = false</span>, array  <span class="argument">$buffercallbacks = null</span>, array  <span class="argument">$bufferparams = null</span>) </pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>object</td>
+                                <td>$logger </td>
+                                <td><p>Provide the logger to use.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>object</td>
+                                <td>$writer </td>
+                                <td><p>Provide the log writer to use.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$restypes </td>
+                                <td><p>Description of different resource tags and their attribute(s) referencing the resource.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$manual_finalize </td>
+                                <td><p>If set to &quot;true&quot; automatic finalization is disabled (enabled by default).</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$buffercallbacks </td>
+                                <td><p>Provide array of callback functions for the internal LogBuffer.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$bufferparams </td>
+                                <td><p>Provide parameters for LogBuffer.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            author
+                        </th>
+                        <td>
+                                                                                            <p>Michael Beyer <a href="mailto:mgbeyer@gmx.de">mgbeyer@gmx.de</a></p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            version
+                        </th>
+                        <td>
+                                                                                            <p>v0.1.0</p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            api
+                        </th>
+                        <td>
+                                                                                            
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_logAssets" name="method_logAssets" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">logAssets()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">logAssets(string  <span class="argument">$html</span>) </pre>
+                <p><em>Parse $html and log all assets found to the buffer</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$html </td>
+                                <td><p>HTML to parse.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            author
+                        </th>
+                        <td>
+                                                                                            <p>Michael Beyer <a href="mailto:mgbeyer@gmx.de">mgbeyer@gmx.de</a></p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            version
+                        </th>
+                        <td>
+                                                                                            <p>v0.1.0</p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            api
+                        </th>
+                        <td>
+                                                                                            
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_finalize" name="method_finalize" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">finalize()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">finalize() </pre>
+                <p><em>Flush logbuffer to writer</em></p>
+                
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            author
+                        </th>
+                        <td>
+                                                                                            <p>Michael Beyer <a href="mailto:mgbeyer@gmx.de">mgbeyer@gmx.de</a></p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            version
+                        </th>
+                        <td>
+                                                                                            <p>v0.1.0</p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            api
+                        </th>
+                        <td>
+                                                                                            
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLogbuffer" name="method_getLogbuffer" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLogbuffer()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLogbuffer() : object</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    object
+                                            &mdash; <p>Get the logbuffer object.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            author
+                        </th>
+                        <td>
+                                                                                            <p>Michael Beyer <a href="mailto:mgbeyer@gmx.de">mgbeyer@gmx.de</a></p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            version
+                        </th>
+                        <td>
+                                                                                            <p>v0.1.0</p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            api
+                        </th>
+                        <td>
+                                                                                            
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">PEPR.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Tools\PEPR.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/phpWTL.html">\phpWTL</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on May 29th, 2018 at 11:20.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

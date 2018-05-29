@@ -15,7 +15,7 @@ class CombinedDataRetriever extends CommonDataRetriever {
 
 	/**
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.1
+	  * @version v0.1.2
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -25,8 +25,8 @@ class CombinedDataRetriever extends CommonDataRetriever {
 			if ($value==null) {
 				switch ($field_name) {
 					case "referrer":
-						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL) &&
-						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, CommonCombinedDRP::DRP_CC_CONTENT_LENGTH_RETRIEVAL)==CommonCombinedDRP::DRP_CC_CLR_CUSTOM) {
+						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
+						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
 							$referrer= static::getUrlOrigin().$_SERVER['REQUEST_URI'];
 						} else {
 							$referrer= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : "");
