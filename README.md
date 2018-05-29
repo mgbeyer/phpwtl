@@ -1554,7 +1554,7 @@ To be honest, there's a problem: This procedure is invasive. It lies in the natu
 
 **P.E.P.R. - [P]phWTL [E]xternal [P]lunder [R]aider**
 
-This is a little tool for the automated logging of static assets included in a page, in proper (webserver like) sequence. PEPR will try and parse the static HTML output of your PHP script to identify all static assets in it automatically. So in contrast to the SALT tool, this procedure is non-invasive and tags, embedding static assets into the source, don't need to be changed. Unlike SALT, this tool needs PHP output buffering to work. 
+This is a little tool for the automated logging of static assets included in a page, in proper (webserver like) sequence. PEPR will try and parse the static HTML output of your PHP script to identify all static assets in it automatically. So in contrast to the SALT tool, this procedure is non-invasive and tags, embedding static assets into the source, don't need to be changed. Unlike SALT, this tool needs PHP output buffering to work (i.e. the logger's data retrieval policy "DRP_CONTENT_LENGTH_RETRIEVAL" set to "DRP_CLR_BUFFER"). 
 
 **SALT or PEPPER, what's it to be?**
 
@@ -1562,7 +1562,7 @@ It's a matter of personal taste and of course your individual code-base.
 
 **SALT** is more invasive than PEPR, because you need to exchange all occurences of tags like IMG or SCRIPT with a SALT command. This is not feasible for larger projects. But unlike PEPR it works without PHP output buffering, so if you have a problem with that, it's the tool of your choice. Also SALT is flexible and offers fully customizable tags.
 
-**PEPR** on the other hand won't work without PHP output buffering but is non-invasive because it scans the HTML output of your PHP script for tags like IMG or SCRIPT on its own. There's only little additional code neccessary to get this tool to work in your project. And mappings for tag-names to attributes, adressing resources, are fully customizable. But PEPR demands slightly higher standards of your PHP installation/configuration (it needs DOM support, which normally shouldn't be any problem since PHP5).
+**PEPR** on the other hand won't work without PHP output buffering but is non-invasive because it scans the HTML output of your PHP script for tags like IMG or SCRIPT on its own. There's only little additional code neccessary to get this tool to work in your project. And mappings for tag-names to attributes, addressing resources, are fully customizable. But PEPR demands slightly higher standards of your PHP installation/configuration (it needs DOM support, which normally shouldn't be any problem since PHP5).
 
 **PEPR - a real-world example:**
 
