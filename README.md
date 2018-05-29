@@ -923,7 +923,7 @@ As of this release phpWTL supports the following major log formats:
 * Technical limitations in the support of the following fields:
 	- *client_identity* This always returns a hyphen. Even Apache does not try to obtain data here (it is regarded "highly unreliable").
 	- *status_code* Might not always be set properly because a PHP script is not in a webserver's position
-	- *content_size* [This is discussed en detail right here](#drawback_2)
+	- *content_size* [This is discussed en detail right here](#drawbacks)
 
 **Overview**
 
@@ -975,7 +975,7 @@ As of this release phpWTL supports the following major log formats:
 	- s-sitename, sc-win32-status, cs-bytes
 * Technical/logical limitations of the following supported fields:
 	- *sc-status* Might not always be set properly because a PHP script is not in a webserver's position
-	- *sc-bytes* [This is discussed en detail right here](#drawback_2)
+	- *sc-bytes* [This is discussed en detail right here](#drawbacks)
 	- *time-taken* Measurement by PHP script can only be an approximation
 
 **Overview**
