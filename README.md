@@ -1044,6 +1044,8 @@ A simple and (phpWTL) proprietary format to log application events, errors and e
 
 All listings shown here can also be found in the *phpWTL/examples* project folder.
 
+<br/>
+
 **EXAMPLE 1a - Combined Logger and FileLogWriter (FLW)**
 
 	use phpWTL\phpWTL;
@@ -1122,6 +1124,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 	$writer->writeToLog($content_obj);
 
 <br/>
+
 **EXAMPLE 1b - Combined Logger and DatabaseLogWriter (DBLW)**
 
 	use phpWTL\phpWTL;
@@ -1213,6 +1216,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 	echo "<br/><br/>toArray: "; print_r($data);
 
 <br/>
+
 **EXAMPLE 2a - Extended (W3C) Logger and FileLogWriterEx (FLWEx)**
 
 	use phpWTL\ExtendedLogger;
@@ -1258,6 +1262,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 	print_r($logger->buildDirectivesForFileWriter($keys_to_show));
 
 <br/>
+
 **EXAMPLE 2b - Extended (W3C) Logger and DatabaseLogWriter (DBLW)**
 
 	use phpWTL\ExtendedLogger;
@@ -1334,6 +1339,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 	echo "<br/><br/>metaToArray: "; print_r($metaData);
 
 <br/>
+
 **EXAMPLE 3a - PHP application Logger and FileLogWriter (FLW)**
 
 	use phpWTL\PhpAppLogger;
@@ -1395,6 +1401,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 	} else print_r($fail);
 
 <br/>
+
 **EXAMPLE 3b - PHP application Logger and FileLogWriter (FLW) and LogBuffer**
 
 	use phpWTL\PhpAppLogger;
