@@ -92,6 +92,8 @@ Access/user statistics logging was specially designed for usage on a freehosting
 * Highly modular and customizable architecture (e.g. logging itself is independent from actual log data storage).
 * The architecture allows for loosely coupled modules so developers can easily modify and/or replace logically related functionality (logging format, data retrieval, data validation, data formatting, log writing).
 * Character encoding facility for log data output.
+* Tool support for the (automated) logging of hits to static assets.
+* IP address anonymization (ip4 and ip6).
 * Many useful configurable settings for logging and log storage (e.g. logging multiple applications separately).
 
 <br/>
