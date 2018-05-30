@@ -1,7 +1,7 @@
 # phpWhatTheLog (phpWTL)
 ### a PHP logging framework
 
-Michael Beyer, 07-2016, rev. 0.3.5-alpha (2018/05/26)
+Michael Beyer, 07-2016, rev. 0.3.6-alpha (2018/06/01)
 <br/>
 <mgbeyer@gmx.de>
 
@@ -1668,6 +1668,61 @@ Perform the actual logging, e.g. included as: require_once('include/logger_log.p
 	// if set to manual finalization, the actual logging process is done only after the finalize method is called
 	//$pepr->finalize();
 	?>
+
+
+<br/>
+
+**IP address anonymization (ipTools)**
+
+This is a small content flter tool (*ipTools*) to anonymize ip4 and ip6 addresses (e.g. to prevent legal issues in the EU region). How much of the IP is anonymized, and the substitution wildcard for anonymized parts, can be customized for ip4 and ip6 addresses independently. The anonymization process takes place before anything logged has been permanently written (to disk or database), so it is law-abiding. 	
+
+Here's a little snippet to show how to use this feature:
+
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+	use phpWTL\Tools\ipTools;
+
+	define('PATH_TO_PHPWTL', '../phpWTL/');
+	require_once PATH_TO_PHPWTL.'phpWTL.php';
+	require_once PATH_TO_PHPWTL.'CombinedLogger.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriter.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriterHelper.php';
+	require_once PATH_TO_PHPWTL.'Tools/ipTools.php';
+
+
+	// instantiate a logger for "combined" format
+	$logger= CombinedLogger::getInstance();
+
+	// instantiate a file log writer
+	$writer= new FileLogWriter();
+
+	// do the actual logging (data retrieval, validation and formatting)
+	$logger->log();
+
+	// anonymize IP address
+	$ip_orig= $logger->getLoggerContent()->__get("host_ip");
+	// "ipAnon" might be called without $params if the default is convenient for you 
+	// (the array below represents the default)
+	// alternative call would be: $ip= ipTools::ipAnon($ip_orig);
+	$ip= ipTools::ipAnon($ip_orig, array(
+		'ip4cut' => "1", 		// anonymize last 1/4 of ip4
+		'ip6cut' => "5", 		// anonymize last 5/8 of ip6
+		'ip4wildcard' => "0", 	// replace anonymized parts with 0
+		'ip6wildcard' => ""		// replace anonymized parts with empty string
+	));
+	if ($logger->getDataValidator()->isValid("host_ip", $ip)) {
+		$logger->getDataRetriever()->setFieldContent("host_ip", $ip);
+		$logger->getDataFormatter()->formatAllField("host_ip");
+	}
+
+	// write log entry
+	$writer->writeToLog($logger->getLoggerContent());
+
 
 <br/>
 
