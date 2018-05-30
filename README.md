@@ -52,13 +52,16 @@ But if you belong to the group of people - like I do - who like to scrounge from
 [EXAMPLES](#examples)
 
 >>>>>>**_ALL THE REST_** &nbsp;&nbsp;
-[GOODIES](#goodies)
-~
 [CONTRIBUTING](#contributing)
 ~
 [LICENSE](#license)
 ~
 [LIMITATIONS](#drawbacks)
+
+>>>>>>>**_GOODIES_** &nbsp;&nbsp;
+[STATIC ASSET LOGGING](#goodies)
+~
+[IP ADDRESS ANONYMIZATION](#iptools)
 
 <br/>
 
@@ -1520,7 +1523,7 @@ All listings shown here can also be found in the *phpWTL/examples* project folde
 <br/><br/>
 
 <a name="goodies"></a>
-## Tools & Goodies [(^)](#_top)
+## Static asset logging [(^)](#_top)
 
 **S.A.L.T. - [S]tatic [A]sset [L]ogging [T]ool**
 
@@ -1674,7 +1677,8 @@ Perform the actual logging, e.g. included as: require_once('include/logger_log.p
 
 <br/>
 
-**IP address anonymization (ipTools)**
+<a name="iptools"></a>
+## IP address anonymization [(^)](#_top)
 
 This is a small content flter tool (*ipTools*) to anonymize ip4 and ip6 addresses (e.g. to prevent legal issues in the EU region). How much of the IP is anonymized, and the substitution wildcard for anonymized parts, can be customized for ip4 and ip6 addresses independently. The anonymization process takes place before anything logged has been permanently written (to disk or database), so it is law-abiding. 	
 
