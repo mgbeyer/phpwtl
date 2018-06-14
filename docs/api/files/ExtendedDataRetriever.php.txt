@@ -1,14 +1,16 @@
 <?php
 namespace phpWTL;
 use phpWTL\aBasicDataRetriever;
+use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
 require_once 'aBasicDataRetriever.php';
+require_once 'LogWriter/FLW/FileLogWriterHelper.php';
 
 /**
   * Data retriever for the extended log file format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.2
+  * @version v0.2.3
   * @api
   */
 class ExtendedDataRetriever extends aBasicDataRetriever {
@@ -35,7 +37,7 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 	  * @param string $value Provide an (optional) value to pass thru to the LoggerContent object, so allowing for the injection of external data.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.6
+	  * @version v0.1.7
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -71,7 +73,21 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
-							$value= $basepath.$requestTarget;
+							$scriptBaseFull= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
+							$scriptBaseRel= str_replace($_SERVER['DOCUMENT_ROOT'], "", $scriptBaseFull);
+							$rtParts= FileLogWriterHelper::separatePathAndFile($requestTarget);							
+							if (FileLogWriterHelper::isAbsolutePath($requestTarget)) {
+								// absolute target (with webserver root ("htdocs") as absolute root)								
+								if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($rtParts['pathname'], FileLogWriterHelper::FOLDER_SEPARATOR)) {
+									$target= FileLogWriterHelper::sanitizePath($rtParts['pathname']);	
+								} else {
+									$target= $scriptBaseRel;
+								}
+							} else {
+								// relative target								
+								$target= FileLogWriterHelper::sanitizePath($scriptBaseRel.$rtParts['pathname']);
+							}
+							$value= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::cleanupPath($target).$rtParts['filename'];
 						} else {
 							$value= $_SERVER['REQUEST_URI'];
 						}

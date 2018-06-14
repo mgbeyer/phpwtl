@@ -1,7 +1,7 @@
 # phpWhatTheLog (phpWTL)
 ### a PHP logging framework
 
-Michael Beyer, 07-2016, rev. 0.3.6-alpha (2018/06/01)
+Michael Beyer, 07-2016, rev. 0.3.7-alpha (2018/06/14)
 <br/>
 <mgbeyer@gmx.de>
 
@@ -62,6 +62,8 @@ But if you belong to the group of people - like I do - who like to scrounge from
 [STATIC ASSET LOGGING](#goodies)
 ~
 [IP ADDRESS ANONYMIZATION](#iptools)
+~
+[SHOWCASE: HOW TO DEAL WITH JS / JQUERY](#zeitreise)
 
 <br/>
 
@@ -216,7 +218,7 @@ Most of all this means if possible you should instantiate your logger right at t
 Whatever output is produced before the instantiation and after calling "log" can and will not be measured.
 
 * **DRP_CLR_CUSTOM**
-You might provide the relative filename/path to another ressource (like an image) via this flag using "parameter". This affects the fields *"content_size"*, *"status_code"*, 
+You might provide the absolute or relative filename/path to another ressource (like an image) via this flag using "parameter". The path is seen as absolute to the webserver document root if it is prefixed with a folder separator (/) and relative otherwise. This affects the fields *"content_size"*, *"status_code"*, 
 the request URI part of *"request_line"* (common format) and the *"referrer"* field (combined format) as follows: 
 	* **"content_size"** will contain the file size of the given ressource (the new request target) or is empty if the ressource-file doesn't exist
 	* **"status code"** will contain "200" if the target exists and "404" otherwise
@@ -1729,6 +1731,136 @@ Here's a little snippet to show how to use this feature:
 	// write log entry
 	$writer->writeToLog($logger->getLoggerContent());
 
+
+<br/>
+
+<a name="zeitreise"></a>
+## How to deal with JavaScript / JQuery - a real-world showcase [(^)](#_top)
+
+<br/>
+<b>How to log assets in a JavaScript / JQuery environment?</b> 
+
+<a href="http://zeitreisehog.bplaced.net/">Zeitreise HOG</a> is an older and rather small nostalgia photo project to illustrate changes in my hometown of <a href="http://de.wikipedia.org/wiki/Hofgeismar">Hofgeismar</a> over the last (roughly) 130 years.
+Technically it's a little outdated but not much involved or complex. What makes it a little challenging in terms of PHP logging is its basic design and usability concept. 
+
+The key element of navigation is a Google based map. Each location of interest is marked by a little pin. If the user clicks on such a pin a small popup div will open and one or more thumbnails of (historical and contemporary combined) images will appear, accompanied by a brief text describing this particular location. A click on the thumbnail will open an overlay which will show the image in full size. If the popup opens, instead of a real thumbnail actually the full-size image is loaded right away. So a subsequent click on the thumbnail will just show the image bigger and won't initiate any new loading process. Let's say for the sake of simplicity: Things are done this way for a (more or less good) reason and because it's an older project, they won't change. So any integration of the logger now has to deal with the situation as it is.
+
+<br/>
+<b>Given this situation: What exactly is the problem?</b> 
+
+Besides the obvious page hits, basically we want two things to be logged here. First, each time a user clicks on a marker and so opens a popup, we want to log the loading of the images. We want this to be logged properly, because this is a real request, leading to real payload (in bytes) to be transferred. Second, we want to know if a user actually clicks on a thumbnail, so if they are really interested to see this images in detail. This is something a real webserver would (and also could) never log, because it's just a client side operation and won't initiate any new request. So, hey, we actually discovered a solid advantage of our PHP logging over *real* logging! But what we DON'T want is to have the image payload logged twice! Because this would distort our logfile analysis in the end. So, how to handle this? 
+
+<br/>
+<b>Let's see how things are done...</b>
+
+"Zeitreise HOG" uses "MapBuilder" (<a href="http://www.mapbuilder.net/">http://www.mapbuilder.net/</a>) as a JavaScript wrapper for Google Maps. A single marker pin is defined like this:
+
+	point = new GLatLng(51.49406946175403, 9.383622407913208);
+	footerHtml = "...";
+	// Define Marker
+	options = {opasity: 100, label:'Alte Post (1930)'}; 
+	InfoHTML = " ... ";
+	marker = createMarker(point, InfoHTML, iconcustom, options, 0);
+	marker.onClick = function() {
+		imglog('img/HOG_AltePost_1.jpg'); 
+		imglog('img/HOG_AltePost_2.jpg');
+	};
+	map.addOverlay(marker);
+	aLocations[0] = new Array(marker, "Alte Post (1930)", InfoHTML, point);
+
+Where "InfoHTML" contains all markup to show up inside the popup, put there by client-side scripting, i.e. the image(s) to load, the explanatory text, etc., for example:
+
+	InfoHTML = "<div id=\"MapBuilderIW\">
+		<div class=\"IWCaption\">Alte Post (1930)</div>
+		<div class=\"IWContent\"><nobr>
+			<img onClick=\"imglog('img/HOG_AltePost_1.jpg', true);\" 
+				 class=\"myImg\" 
+				 src=\"img/HOG_AltePost_1.jpg\" 
+				 alt=\"Alte Post (1930)\" 
+				 width=\"200\">
+				 ...
+			<div id=\"image-notes\">Alte Post...</div>
+		</div>" + footerHtml + 
+	"</div>";
+
+We use a stand-alone PHP script to log things for us which we invoke by AJAX calls, using a little JQuery function like this:
+
+	function imglog(resource, not_changed= false) {
+		$.ajax({
+		  url: "imglog.php?img="+resource + (not_changed ? "&304=1" : ""),
+		  success: function(data) { }
+		});
+	}
+
+<br/>
+<b>Logging a real request initiated by JavaScript code</b>
+
+This is the most straight-forward case. Logging is attached to a marker as an "onClick" event (see listing 1 above).
+
+	marker.onClick = function() { imglog('img/HOG_AltePost_1.jpg'); };
+
+The PHP logger script (see below) will be called inside the "imglog" function via AJAX and log the asset (image) given as a parameter based on the DRP_CLR_CUSTOM data retrieval policy. The referrer will be adjusted to contain the script, the AJAX call was issued from, and the content-length will be set to the file size of the asset (image) to be logged.
+
+<br/>
+<b>Logging the subsequent pseudo request (a user clicks on the image to enlarge it)</b>
+
+Technically this is simple, too. Here the onClick event will be attached directly to the HTML code inside a "InfoHTML" markup block (see listing 2 above).
+
+	<img onClick="imglog('img/HOG_AltePost_1.jpg', true);" ... >
+
+The notable difference here is the second parameter for the "imglog" function, set to "true". This will tell the imglog PHP script to log the hit to the given asset (image) as HTTP status code "304", which means, a requested ressource was not modified and so doesn't need to be transmitted (again). A hit logged in this way will be treated right by logfile analyzing tools - it's an official status code with a clear semantics suitable for the situation, so you will stick to standards when it comes to analyzing your logfiles later.	
+
+<br/>
+<b>This is the stand-alone PHP script, actually performing the logging process:</b>
+
+	use phpWTL\phpWTL;
+	use phpWTL\CombinedLogger;
+	use phpWTL\DRP;
+	use phpWTL\DataRetrievalPolicy;
+	use phpWTL\DataRetrievalPolicyHelper;
+	use phpWTL\LogWriter\FLW\FileLogWriter;
+	use phpWTL\LogWriter\FLW\FileLogWriterHelper;
+
+	define('PATH_TO_PHPWTL', '../phpWTL/');
+	require_once PATH_TO_PHPWTL.'phpWTL.php';
+	require_once PATH_TO_PHPWTL.'CombinedLogger.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriter.php';
+	require_once PATH_TO_PHPWTL.'LogWriter/FLW/FileLogWriterHelper.php';
+
+	require_once('global_funct.php');
+
+	if (isset($_GET["img"])) {
+		$pol= array(
+			new DataRetrievalPolicy(
+				array(
+					'name' => DRP::DRP_CONTENT_LENGTH_RETRIEVAL, 
+					'flag' => DRP::DRP_CLR_CUSTOM,
+					'parameter' => sanitize_liberal($_GET["img"])
+				)
+			)
+		);
+		$logger= CombinedLogger::getInstance($pol);
+		$logger->log();
+
+		// correct referrer (not imglog.php script)
+		$_ref= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : (array_key_exists("referrer", apache_request_headers()) ? apache_request_headers()["referrer"] : null);
+		if ($_ref && $logger->getDataValidator()->isValid("referrer", $_ref)) {
+			$logger->getDataRetriever()->setFieldContent("referrer", $_ref);
+			$logger->getDataFormatter()->formatAllField("referrer");
+		}	
+		
+		$content_obj= $logger->getLoggerContent();
+		$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
+		
+		// flag subsequent call to image as 304 (not modified), this is the case if the image is clicked to be enlarged
+		if (sanitize($_GET["304"])=="1") {
+			$logger->getDataRetriever()->setFieldContent("status_code", "304");
+			$logger->getDataFormatter()->formatAllField("status_code");
+		}
+		
+		$writer= new FileLogWriter("/zeitreisehog/phpwtl_config/flw.ini");
+		$writer->writeToLog($content_obj);
+	}
 
 <br/>
 

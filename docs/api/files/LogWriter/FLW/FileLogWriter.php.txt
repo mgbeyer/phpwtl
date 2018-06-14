@@ -3,14 +3,14 @@ namespace phpWTL\LogWriter\FLW;
 use phpWTL\LogWriter\iBasicLogWriter;
 use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
-require __DIR__ .'/../iBasicLogWriter.php';
-require 'FileLogWriterHelper.php';
+require_once __DIR__ .'/../iBasicLogWriter.php';
+require_once 'FileLogWriterHelper.php';
 
 /**
   * File log writer (FLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.9
+  * @version v0.1.10
   * @api
   */
 class FileLogWriter implements iBasicLogWriter {

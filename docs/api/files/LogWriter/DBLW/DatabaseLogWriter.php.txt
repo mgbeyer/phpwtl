@@ -7,15 +7,15 @@ use Doctrine\Common\ClassLoader;
 
 define('DBAL_BASE_PATH', __DIR__.'/../../'.phpWTL::DBAL_FOLDER_NAME.'/');
 
-require __DIR__ .'/../iBasicLogWriter.php';
-require 'DatabaseLogWriterHelper.php';
+require_once __DIR__ .'/../iBasicLogWriter.php';
+require_once 'DatabaseLogWriterHelper.php';
 require DBAL_BASE_PATH.'lib/Doctrine/Common/ClassLoader.php';
 
 /**
   * Database log writer (DBLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.6
+  * @version v0.2.7
   * @api
   */
 class DatabaseLogWriter implements iBasicLogWriter {

@@ -2,13 +2,13 @@
 namespace phpWTL\LogWriter\DBLW;
 use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
-require '/../FLW/FileLogWriterHelper.php';
+require_once '/../FLW/FileLogWriterHelper.php';
 
 /**
   * Static helper class for DatabaseLogWriter (DBLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.5
+  * @version v0.1.6
   * @api
   */
 class DatabaseLogWriterHelper {

@@ -3,13 +3,13 @@ namespace phpWTL\LogWriter\FLW;
 use phpWTL\LogWriter\FLW\FileLogWriter;
 use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
-require 'FileLogWriter.php';
+require_once 'FileLogWriter.php';
 
 /**
   * File log writer extension for W3C Extended log file format (FLWext). Takes care of meta-data (directives). Might be used for other purposes as well, where header data must be written one-off at the beginning of a logfile.
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.1
+  * @version v0.1.2
   * @api
   */
 class FileLogWriterExt extends FileLogWriter {

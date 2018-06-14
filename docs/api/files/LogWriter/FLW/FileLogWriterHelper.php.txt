@@ -5,7 +5,7 @@ namespace phpWTL\LogWriter\FLW;
   * Static helper class for FileLogWriter (FLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.4
+  * @version v0.1.5
   * @api
   */
 class FileLogWriterHelper {
@@ -99,10 +99,10 @@ class FileLogWriterHelper {
 	}
 
 	/** 
-	  * Simple filename sanatizer. Purges characters other than alphanumeric, hyphen, underscore and dot.
+	  * Simple filename sanitizer. Purges characters other than alphanumeric, hyphen, underscore and dot.
 	  *
 	  * @param string $name
-	  * @return string The sanatized string.
+	  * @return string The sanitized string.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
 	  * @version v0.1.1
@@ -114,7 +114,7 @@ class FileLogWriterHelper {
 	}
 	
 	/** 
-	  * File path sanatizer:
+	  * File path sanitizer:
 	  *
 	  * - Convert all separator characters for paths to FOLDER_SEPARATOR
 	  * - Correct separator count
@@ -123,7 +123,7 @@ class FileLogWriterHelper {
 	  * - Harmonize trailing directory separator (make sure one is in place regardless of original path)
 	  *
 	  * @param string $path
-	  * @return string The sanatized path string.
+	  * @return string The sanitized path string.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
 	  * @version v0.1.1
@@ -316,6 +316,85 @@ class FileLogWriterHelper {
 		}
 				
 		return $ret;
+	}
+
+	/** 
+	  * Simple check if given path is absolute (leading folder separator is present or not).
+	  *
+	  * @param string $target Path to check.
+	  * @return boolean True if path is absolute, false if not.
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	function isAbsolutePath($target) {
+			return (substr($target, 0, 1) == self::FOLDER_SEPARATOR  ? true : false);
+	}
+
+	/** 
+	  * Separate given $target into path and filename.
+	  *
+	  * @param string $target Path + filename to separate.
+	  * @return array Assoc. array, "pathname" contains path, "filename" contains file portion.
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	function separatePathAndFile($target) {
+		$pathname= str_replace(basename($target), "", $target);
+		$filename= str_replace($pathname, "", $target);
+		return array('pathname' => $pathname, 'filename' => $filename);
+	}
+
+	/** 
+	  * Clear a given $target path of single dots, empty portions between folder separators
+	  * and purify double dot parts
+	  *
+	  * @param string $target Path to cleanup
+	  * @return string Purified path.
+	  *
+	  * @author Michael Beyer <mgbeyer@gmx.de>
+	  * @version v0.1.0
+	  * @api
+	  */
+	function cleanupPath($target) {
+		$final_path= "";
+
+		$token= explode(self::FOLDER_SEPARATOR, $target);
+		
+		// delete all occurences of /./ and empty segments
+		$newtoken= array();
+		foreach($token as $v) {
+			if ($v != "." && $v != "") $newtoken[]= $v;	
+		}
+		$token= $newtoken;
+		// handle /../ segments
+		$series_count= 0;
+		$series_start= -1;
+		foreach($token as $k => $v) {
+			if ($v == "..") {
+				$token[$k]= "";
+				if ($series_start == -1) $series_start= $k;
+				$series_count++;
+			} 
+			if ($v != ".." || $k == count($token)-1) {
+				for ($i=0;$i<$series_count;$i++) {
+					$idx= $series_start-$i-1;
+					if ($idx>=0) $token[$idx]= "";
+				}
+				$series_count= 0;
+				$series_start= -1;
+			}
+		}
+
+		// build final path string
+		foreach($token as $v) {
+			if ($v != "") $final_path= $final_path.$v.self::FOLDER_SEPARATOR;
+		}
+		
+		return $final_path;
 	}
 
 	

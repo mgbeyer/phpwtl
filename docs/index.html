@@ -123,19 +123,19 @@
 		<h4>IP address anonymization (ipTools)</h4> 
 		A small content flter tool to anonymize ip4 and ip6 addresses (e.g. to prevent legal issues in the EU region). How much of the IP is anonymized, and the substitution wildcard for anonymized parts, can be customized for ip4 and ip6 addresses independently. The anonymization process takes place before anything logged has been permanently written (to disk or database), so it is law-abiding.
 		<br/>
-		For more information, <a href="https://github.com/mgbeyer/phpwtl">check out the GitHub pages</a>.
+		For more information, <a href="https://github.com/mgbeyer/phpwtl#iptools">check out the GitHub pages</a>.
 		
 		<br/><br/>
 		<h4>2018-0526</h4> 
 		<h4>S.A.L.T. - [S]tatic [A]sset [L]ogging [T]ool</h4> 
 		This little tool can help you with the task of manually logging assets like images, stylesheets or client-side script files in proper sequence. Because it internally uses the LogBuffer class, it will always collect all entries until you tell it to flush them to a log writer in the end. So the proper sequence is always taken care of, no matter how you handle the logging process otherwise (e.g. PHP output buffering).
 		<br/>
-		For more information, <a href="https://github.com/mgbeyer/phpwtl">check out the GitHub pages</a>.
+		For more information, <a href="https://github.com/mgbeyer/phpwtl#goodies">check out the GitHub pages</a>.
 		<br/><br/>
 		<h4>P.E.P.R. - [P]phWTL [E]xternal [P]lunder [R]aider</h4> 
 		This is a little tool for the automated logging of static assets included in a page, in proper (webserver like) sequence. PEPR will try and parse the static HTML output of your PHP script to identify all static assets in it automatically. So in contrast to the SALT tool, this procedure is non-invasive and tags, embedding static assets into the source, don't need to be changed. Unlike SALT, this tool needs PHP output buffering to work.
 		<br/>
-		For more information, <a href="https://github.com/mgbeyer/phpwtl">check out the GitHub pages</a>.
+		For more information, <a href="https://github.com/mgbeyer/phpwtl#goodies">check out the GitHub pages</a>.
 		<br/><br/>
 		<h4>S.A.L.T. or P.E.P.R. - Which one to use?</h4> 
 		It's a matter of personal taste and of course your individual code-base. 
@@ -150,7 +150,13 @@
 		<h3>
 		Showcase &nbsp;<small><a href="#">(^)</a></small>
 		</h3>
-		phpWTL live... coming soon...
+		<h4>2018-0614</h4> 
+		<h4>How to log assets in a JavaScript / JQuery environment?</h4> 
+		<a href="http://zeitreisehog.bplaced.net/">Zeitreise HOG</a> is an older and rather small nostalgia photo project to illustrate changes in my hometown of <a href="http://de.wikipedia.org/wiki/Hofgeismar">Hofgeismar</a> over the last (roughly) 130 years.
+		<br/>
+		Technically it's a little outdated but not much involved or complex. What makes it a little challenging in terms of PHP logging is its basic design and usability concept. This involves a JavaScript based wrapper for a Google Map and client-side scripted HTML generation for including images. 
+		<br/>
+		For more information, <a href="https://github.com/mgbeyer/phpwtl#zeitreise">check out the GitHub pages</a>.
 	  </section>
 
 	  <section>

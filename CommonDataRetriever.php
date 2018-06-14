@@ -1,14 +1,16 @@
 <?php
 namespace phpWTL;
 use phpWTL\aBasicDataRetriever;
+use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
 require_once 'aBasicDataRetriever.php';
+require_once 'LogWriter/FLW/FileLogWriterHelper.php';
 
 /**
   * Data retriever for the common log format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.3
+  * @version v0.2.4
   * @api
   */
 class CommonDataRetriever extends aBasicDataRetriever {
@@ -36,7 +38,7 @@ class CommonDataRetriever extends aBasicDataRetriever {
 	  * @param string $value Provide an (optional) value to pass thru to the LoggerContent object, so allowing for the injection of external data.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.4
+	  * @version v0.1.5
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -59,9 +61,22 @@ class CommonDataRetriever extends aBasicDataRetriever {
 						if (DataRetrievalPolicyHelper::existsDataRetrievalPolicy(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL) &&
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
-							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
-							$basepath= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
-							$value= $_SERVER['REQUEST_METHOD']." ".$basepath.$requestTarget." ".$_SERVER['SERVER_PROTOCOL'];
+							$scriptBaseFull= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
+							$scriptBaseRel= str_replace($_SERVER['DOCUMENT_ROOT'], "", $scriptBaseFull);
+							$rtParts= FileLogWriterHelper::separatePathAndFile($requestTarget);							
+							if (FileLogWriterHelper::isAbsolutePath($requestTarget)) {
+								// absolute target (with webserver root ("htdocs") as absolute root)								
+								if (!FileLogWriterHelper::pathLeavesOrEqualsRoot($rtParts['pathname'], FileLogWriterHelper::FOLDER_SEPARATOR)) {
+									$target= FileLogWriterHelper::sanitizePath($rtParts['pathname']);	
+								} else {
+									$target= $scriptBaseRel;
+								}
+							} else {
+								// relative target								
+								$target= FileLogWriterHelper::sanitizePath($scriptBaseRel.$rtParts['pathname']);
+							}
+							$final_path= FileLogWriterHelper::FOLDER_SEPARATOR.FileLogWriterHelper::cleanupPath($target).$rtParts['filename'];							
+							$value= $_SERVER['REQUEST_METHOD']." ".$final_path." ".$_SERVER['SERVER_PROTOCOL'];
 						} else {
 							$value= $_SERVER['REQUEST_METHOD']." ".$_SERVER['REQUEST_URI']." ".$_SERVER['SERVER_PROTOCOL'];
 						}
