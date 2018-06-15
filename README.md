@@ -1542,15 +1542,15 @@ To be honest, there's a problem: This procedure is invasive. It lies in the natu
 
 	// ... (initialize logger and writer)
     $salt= new SALT($logger, $writer);
-	logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg");
-    logAssetType(SALTHelper::SALT_RES_CSS, "styles/myStyle.css");
-    logAssetType(SALTHelper::SALT_RES_JS, "script/myScript.js");
-    logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg", array(
+	$salt->logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg");
+    $salt->logAssetType(SALTHelper::SALT_RES_CSS, "styles/myStyle.css");
+    $salt->logAssetType(SALTHelper::SALT_RES_JS, "script/myScript.js");
+    $salt->logAssetType(SALTHelper::SALT_RES_IMG, "images/myImage.jpg", array(
       'alt' => 'hallo Welt!',
       'width' => '640px',
       'height' => '480px'
 	));
-    logAssetCustom("tagname", "res/myRes.whatever", array(
+    $salt->logAssetCustom("tagname", "res/myRes.whatever", array(
       'source' => '*',
       'xyz' => 'test123'
 	));
