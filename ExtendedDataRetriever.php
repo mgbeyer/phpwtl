@@ -37,7 +37,7 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 	  * @param string $value Provide an (optional) value to pass thru to the LoggerContent object, so allowing for the injection of external data.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.7
+	  * @version v0.1.8
 	  * @api
 	  */
 	public function retrieveField($field_name, $value= null) {
@@ -117,6 +117,10 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 						    DataRetrievalPolicyHelper::getDataRetrievalPolicyFlag(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL)==DRP::DRP_CLR_CUSTOM) {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
+							if (FileLogWriterHelper::isAbsolutePath($requestTarget)) {
+								$scriptBaseRel= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
+								$basepath= str_replace($scriptBaseRel, "", $basepath);
+							}
 							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
 								$value= filesize($requestpath);	
