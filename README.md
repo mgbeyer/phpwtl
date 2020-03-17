@@ -1849,14 +1849,14 @@ The notable difference here is the second parameter for the "imglog" function, s
 			$logger->getDataFormatter()->formatAllField("referrer");
 		}	
 		
-		$content_obj= $logger->getLoggerContent();
-		$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
-		
 		// flag subsequent call to image as 304 (not modified), this is the case if the image is clicked to be enlarged
 		if (sanitize($_GET["304"])=="1") {
 			$logger->getDataRetriever()->setFieldContent("status_code", "304");
 			$logger->getDataFormatter()->formatAllField("status_code");
 		}
+		
+		$content_obj= $logger->getLoggerContent();
+		$content_obj->setEncoding(phpWTL::SYSTEM_ENCODING);
 		
 		$writer= new FileLogWriter("/zeitreisehog/phpwtl_config/flw.ini");
 		$writer->writeToLog($content_obj);
