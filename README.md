@@ -1853,6 +1853,8 @@ The notable difference here is the second parameter for the "imglog" function, s
 		if (sanitize($_GET["304"])=="1") {
 			$logger->getDataRetriever()->setFieldContent("status_code", "304");
 			$logger->getDataFormatter()->formatAllField("status_code");
+			$logger->getDataRetriever()->setFieldContent("content_size", "-");
+			$logger->getDataFormatter()->formatAllField("content_size");
 		}
 		
 		$content_obj= $logger->getLoggerContent();
