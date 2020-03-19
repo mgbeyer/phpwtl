@@ -2,7 +2,7 @@
 namespace phpWTL\Tools;
 use phpWTL\LogWriter\FLW\FileLogWriterHelper;
 
-require_once '/../LogWriter/FLW/FileLogWriterHelper.php';
+require_once __DIR__ .'/../LogWriter/FLW/FileLogWriterHelper.php';
 
 /**
   * Helper class for P.E.P.R.
