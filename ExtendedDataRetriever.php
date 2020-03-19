@@ -118,10 +118,10 @@ class ExtendedDataRetriever extends aBasicDataRetriever {
 							$requestTarget= DataRetrievalPolicyHelper::getDataRetrievalPolicyParameter(static::$retrievalPolicies, DRP::DRP_CONTENT_LENGTH_RETRIEVAL);
 							$basepath= str_replace(basename($_SERVER["SCRIPT_FILENAME"]), "", $_SERVER['SCRIPT_FILENAME']);
 							if (FileLogWriterHelper::isAbsolutePath($requestTarget)) {
-								$scriptBaseRel= str_replace($_SERVER['DOCUMENT_ROOT'], "", $basepath);
-								$basepath= str_replace($scriptBaseRel, "", $basepath);
+								$requestpath= $basepath.substr($requestTarget, 1, strlen($requestTarget));
+							} else {
+								$requestpath= $basepath.$requestTarget;
 							}
-							$requestpath= $basepath.$requestTarget;
 							if (file_exists($requestpath)) {
 								$value= filesize($requestpath);	
 							} else {
