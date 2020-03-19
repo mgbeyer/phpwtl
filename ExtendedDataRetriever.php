@@ -10,7 +10,7 @@ require_once 'LogWriter/FLW/FileLogWriterHelper.php';
   * Data retriever for the extended log file format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.3
+  * @version v0.2.4
   * @api
   */
 class ExtendedDataRetriever extends aBasicDataRetriever {

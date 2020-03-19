@@ -10,7 +10,7 @@ require_once 'LogWriter/FLW/FileLogWriterHelper.php';
   * Data retriever for the common log format. 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.2.4
+  * @version v0.2.5
   * @api
   */
 class CommonDataRetriever extends aBasicDataRetriever {
