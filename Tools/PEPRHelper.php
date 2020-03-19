@@ -8,7 +8,7 @@ require_once __DIR__ .'/../LogWriter/FLW/FileLogWriterHelper.php';
   * Helper class for P.E.P.R.
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.0
+  * @version v0.1.1
   * @api All constant names (actual values might be subject to change)
   */
 class PEPRHelper {

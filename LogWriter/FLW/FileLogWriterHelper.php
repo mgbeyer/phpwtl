@@ -5,7 +5,7 @@ namespace phpWTL\LogWriter\FLW;
   * Static helper class for FileLogWriter (FLW). 
   *
   * @author Michael Beyer <mgbeyer@gmx.de>
-  * @version v0.1.5
+  * @version v0.1.6
   * @api
   */
 class FileLogWriterHelper {
@@ -325,10 +325,10 @@ class FileLogWriterHelper {
 	  * @return boolean True if path is absolute, false if not.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
-	function isAbsolutePath($target) {
+	static function isAbsolutePath($target) {
 			return (substr($target, 0, 1) == self::FOLDER_SEPARATOR  ? true : false);
 	}
 
@@ -339,10 +339,10 @@ class FileLogWriterHelper {
 	  * @return array Assoc. array, "pathname" contains path, "filename" contains file portion.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
-	function separatePathAndFile($target) {
+	static function separatePathAndFile($target) {
 		$pathname= str_replace(basename($target), "", $target);
 		$filename= str_replace($pathname, "", $target);
 		return array('pathname' => $pathname, 'filename' => $filename);
@@ -356,10 +356,10 @@ class FileLogWriterHelper {
 	  * @return string Purified path.
 	  *
 	  * @author Michael Beyer <mgbeyer@gmx.de>
-	  * @version v0.1.0
+	  * @version v0.1.1
 	  * @api
 	  */
-	function cleanupPath($target) {
+	static function cleanupPath($target) {
 		$final_path= "";
 
 		$token= explode(self::FOLDER_SEPARATOR, $target);
