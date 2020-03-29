@@ -1,7 +1,7 @@
 # phpWhatTheLog (phpWTL)
 ### a PHP logging framework
 
-Michael Beyer, 07-2016, rev. 0.3.7-alpha (2018/06/14)
+Michael Beyer, 07-2016, rev. 0.3.8-alpha (2020/03/19)
 <br/>
 <mgbeyer@gmx.de>
 
