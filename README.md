@@ -44,21 +44,21 @@ But if you belong to the group of people - like I do - who like to scrounge from
 ~
 [LOG BUFFER](#log_buffer)
 
->>>>>**_REFERENCES_** &nbsp;&nbsp;
+>**_REFERENCES_** &nbsp;&nbsp;
 [API DOCUMENTATION](#apidoc)
 ~
 [SUPPORTED FORMATS](#formats)
 ~
 [EXAMPLES](#examples)
 
->>>>>>**_ALL THE REST_** &nbsp;&nbsp;
+>>**_ALL THE REST_** &nbsp;&nbsp;
 [CONTRIBUTING](#contributing)
 ~
 [LICENSE](#license)
 ~
 [LIMITATIONS](#drawbacks)
 
->>>>>>>**_GOODIES_** &nbsp;&nbsp;
+>>>**_GOODIES_** &nbsp;&nbsp;
 [STATIC ASSET LOGGING](#goodies)
 ~
 [IP ADDRESS ANONYMIZATION](#iptools)
@@ -1880,9 +1880,11 @@ But feel free to drop me a line. Either here on GitHub or via Email.
 
 Copyright 2016 Michael G. Beyer (<mgbeyer@gmx.de>).
 
-Licensed under the Apache License, version 2.0.
+Licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
 <br/>
-[(http://www.apache.org/licenses/LICENSE-2.0)](http://www.apache.org/licenses/LICENSE-2.0)
+<a href="https://creativecommons.org/licenses/by-sa/4.0/">LICENSE Deed</a> |
+<a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">LICENSE Legal Code</a>
+
 
 <br/>
 
