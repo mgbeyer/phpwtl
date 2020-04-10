@@ -44,6 +44,8 @@ But if you belong to the group of people - like I do - who like to scrounge from
 ~
 [LOG BUFFER](#log_buffer)
 
+<br/>
+
 >**_REFERENCES_** &nbsp;&nbsp;
 [API DOCUMENTATION](#apidoc)
 ~
